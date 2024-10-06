@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://data/hex_tile.obj" type="ArrayMesh" id=1]
+
+[sub_resource type="SpatialMaterial" id=1]
+albedo_color = Color( 0.552941, 0.584314, 0.560784, 1 )
+
+[node name="hex_tile" type="MeshInstance"]
+mesh = ExtResource( 1 )
+material/0 = SubResource( 1 )
