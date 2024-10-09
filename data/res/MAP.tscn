@@ -12,10 +12,10 @@ transform = Transform( 0.512942, 0.440193, -0.736967, 0, 0.858513, 0.512792, 0.8
 light_color = Color( 0.886275, 0.886275, 0.792157, 1 )
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 0.5, 0.75, -0.433013, 0, 0.5, 0.866025, 0.866025, -0.433013, 0.25, 0, 15.9, 0 )
+transform = Transform( 0.5, 0.75, -0.433013, 0, 0.5, 0.866025, 0.866025, -0.433013, 0.25, 0, 26.2533, 0 )
 current = true
 fov = 68.0
-far = 80.0
+far = 200.0
 script = ExtResource( 1 )
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]

@@ -8,18 +8,19 @@ var hex_size    = 2
 var hex_height  = 1.0
 
 
+var map_data : Array
+
 
 
 
 
 func _ready() -> void:
-#	yield(get_tree().create_timer(1), "timeout")
-
-	for x in range(-20, 30):
-		for y in range(-20, 30):
+	for x in range(0, 40):
+		for y in range(0, 40):
 			hex           = hex_.instance()
 			add_child(hex)
 			hex.translation = hex_to_world(x, y)
+			map_data.append([hex])
 
 
 
