@@ -1,0 +1,20 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/hex_tile.obj-5283c457c4e5d247441aa3f7df213274.mesh"
+
+[deps]
+
+files=[ "res://.import/hex_tile.obj-5283c457c4e5d247441aa3f7df213274.mesh" ]
+
+source_file="res://data/models/map/tile/hex_tile.obj"
+dest_files=[ "res://.import/hex_tile.obj-5283c457c4e5d247441aa3f7df213274.mesh", "res://.import/hex_tile.obj-5283c457c4e5d247441aa3f7df213274.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+octahedral_compression=true
+optimize_mesh_flags=4286
