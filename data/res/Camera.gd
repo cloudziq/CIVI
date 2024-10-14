@@ -7,18 +7,21 @@ var move_vector    := Vector3()
 var target_tilt    := 0.0
 var target_fov     := 0.0
 var target_dof     := 0.0
+var target_sd      := 0.0
 
 var def_zoom_speed := 25.0
 var def_move_speed := 2.0
 
-var min_h :=  16.0
-var max_h :=  40.0
-var min_a := -42.0
-var max_a := -76.0
-var min_f :=  52.0
-var max_f :=  96.0
-var min_d :=  0.1
-var max_d :=  0.0
+var min_h  :=  16.0
+var max_h  :=  40.0
+var min_a  := -40.0
+var max_a  := -76.0
+var min_f  :=  52.0
+var max_f  :=  96.0
+var min_d  :=  0.06
+var max_d  :=  0.0
+var min_sd :=  60
+var max_sd :=  80
 
 
 var hex_radius    = 2.0
@@ -27,7 +30,7 @@ var selected_hex  = null
 var immediate_geometry : ImmediateGeometry
 
 
-var dof : float
+var xx    : float
 
 
 
@@ -35,7 +38,6 @@ var dof : float
 
 
 func _ready() -> void:
-	# Dodajemy ImmediateGeometry do kamery (jeśli nie ma go na scenie)
 	immediate_geometry  = ImmediateGeometry.new()
 	add_child(immediate_geometry)
 	cam_mod()
@@ -45,18 +47,19 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	#  Zooming:
+	#  Zoom:
 	if zoom_speed != 0:
 		global_transform.origin.y  = clamp(global_transform.origin.y+zoom_speed*delta,min_h,max_h)
 		zoom_speed                 = lerp(zoom_speed, 0.0, .16)
+		cam_mod()
 
-	#  Moving:
+	#  Move:
 	if move_vector != Vector3():
 		var vector  = transform.basis.x * move_vector.x + transform.basis.z * move_vector.z
 		vector.y    = 0
 		global_transform.origin += vector.normalized() * move_vector.length() * delta
 
-	#  Tilting:
+	#  Tilt:
 	if rotation_degrees.x != target_tilt:
 		rotation_degrees.x = lerp(rotation_degrees.x, target_tilt, 0.06)
 
@@ -65,9 +68,14 @@ func _process(delta: float) -> void:
 		fov = lerp(fov, target_fov, 0.08)
 
 	#  DOF:
-	dof  = $"%Env".environment.dof_blur_far_amount
-	if dof != target_dof:
-		$"%Env".environment.dof_blur_far_amount = lerp(dof, target_dof, 0.008)
+	xx  = $"%Env".environment.dof_blur_far_amount
+	if xx != target_dof:
+		$"%Env".environment.dof_blur_far_amount = lerp(xx, target_dof, 0.01)
+
+	#  Shadow Distance:
+	xx  = $"%Sun".directional_shadow_max_distance
+	if xx != target_sd:
+		$"%Sun".directional_shadow_max_distance = lerp(xx, target_sd, .6)
 
 	update_selected_hex()
 
@@ -104,16 +112,14 @@ func _input(event) -> void:
 
 
 func cam_mod(move := 0.0) -> void:
+	var ratio      := (global_transform.origin.y - min_h) / (max_h - min_h)
+	zoom_speed      = clamp(zoom_speed + move, -def_zoom_speed, def_zoom_speed)
+	move_speed_add  = def_move_speed * (1 + ratio * 22)
 
-	var ratio := (global_transform.origin.y - min_h) / (max_h - min_h)
-#	ratio += zoom_speed
-#	zoom_speed += move
-	zoom_speed = clamp(zoom_speed + move, -def_zoom_speed, def_zoom_speed)
-	move_speed_add = def_move_speed * (1 + ratio * 22)
-
-	target_tilt  = lerp(min_a, max_a, ratio)
-	target_fov   = lerp(min_f, max_f, ratio)
-	target_dof   = lerp(min_d, max_d, ratio)
+	target_tilt  = lerp(min_a,  max_a,  ratio)
+	target_fov   = lerp(min_f,  max_f,  ratio)
+	target_dof   = lerp(min_d,  max_d,  ratio)
+	target_sd    = lerp(min_sd, max_sd, ratio)
 
 
 
@@ -139,10 +145,10 @@ func update_selected_hex() -> void:
 		var hit_pos = result.position  # Pozycja przecięcia promienia z obiektem
 		var hex_coords = world_to_hex(hit_pos)  # Zamiana pozycji na współrzędne heksagonalne
 		selected_hex = hex_coords
-		print("Heks na współrzędnych: ", hex_coords)
+#		print("Heks na współrzędnych: ", hex_coords)
 	else:
 		selected_hex = null
-		print("Kursor nie jest nad żadnym heksem.")
+#		print("Kursor nie jest nad żadnym heksem.")
 
 func draw_debug_line(from, to) -> void:
 	immediate_geometry.clear()

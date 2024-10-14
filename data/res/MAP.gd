@@ -52,14 +52,14 @@ func multimesh_factory() -> void:
 	var material_hill  = SpatialMaterial.new()
 
 	#  flat01 mat:
-	material_flat.albedo_color  = Color(0.396078, 0.898039, 0.227451)
+	material_flat.albedo_color  = Color(0.6, 1, 0.3)
 	material_flat.roughness     = .9
 	material_flat.metallic      =  1
 
 	#  hill01 mat:
-	material_hill.albedo_color  = Color(0.396078, 0.898039, 0.227451)
+	material_hill.albedo_color  = Color(0.6, 1, 0.3)
 	material_hill.roughness     = .9
-	material_hill.metallic      = 1
+	material_hill.metallic      =  1
 
 	var flat_count = 0
 	var hill_count = 0
@@ -71,18 +71,18 @@ func multimesh_factory() -> void:
 			hill_count += 1
 
 	#  flat01:
-	terrain_data[0][1].multimesh = MultiMesh.new()
-	terrain_data[0][1].multimesh.mesh = load("res://data/models/map/tile/flat01.obj")
-	terrain_data[0][1].multimesh.transform_format = MultiMesh.TRANSFORM_3D
-	terrain_data[0][1].multimesh.instance_count = flat_count
-	terrain_data[0][1].material_override = material_flat
+	terrain_data[0][1].multimesh       = MultiMesh.new()
+	terrain_data[0][1].multimesh.mesh  = load("res://data/models/map/tile/flat01.obj")
+	terrain_data[0][1].multimesh.transform_format  = MultiMesh.TRANSFORM_3D
+	terrain_data[0][1].multimesh.instance_count    = flat_count
+	terrain_data[0][1].material_override           = material_flat
 
 	#  hill01:
-	terrain_data[1][1].multimesh = MultiMesh.new()
-	terrain_data[1][1].multimesh.mesh = load("res://data/models/map/tile/hill01.obj")
-	terrain_data[1][1].multimesh.transform_format = MultiMesh.TRANSFORM_3D
-	terrain_data[1][1].multimesh.instance_count = hill_count
-	terrain_data[1][1].material_override = material_hill
+	terrain_data[1][1].multimesh       = MultiMesh.new()
+	terrain_data[1][1].multimesh.mesh  = load("res://data/models/map/tile/hill01.obj")
+	terrain_data[1][1].multimesh.transform_format  = MultiMesh.TRANSFORM_3D
+	terrain_data[1][1].multimesh.instance_count    = hill_count
+	terrain_data[1][1].material_override           = material_hill
 
 	var i_flat = 0
 	var i_hill = 0
