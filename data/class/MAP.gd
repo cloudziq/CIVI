@@ -1,15 +1,17 @@
 extends Spatial
 
 
+
+
 var terrain_data := [
 	["flat01", MultiMeshInstance.new()],
 	["hill01", MultiMeshInstance.new()]
 ]
 
 
-var hex_size = 2
-var hex_height = 1.0
-var map_data = []  # Tutaj zapiszemy dane o każdym hexie
+var hex_size   := 2
+var map_data   := []
+var hex_height  = 1.0
 
 
 
@@ -17,8 +19,10 @@ var map_data = []  # Tutaj zapiszemy dane o każdym hexie
 
 
 func _ready() -> void:
-	map_gen(40, 40)
+	var LightCycle := DayNightLightCycle.new()
 
+	map_gen(60, 60)
+	add_child(LightCycle)
 
 
 
@@ -49,17 +53,17 @@ func map_gen(s1: int, s2: int) -> void:
 
 func multimesh_factory() -> void:
 	var material_flat  = SpatialMaterial.new()
-	var material_hill  = SpatialMaterial.new()
+#	var material_hill  = SpatialMaterial.new()
 
 	#  flat01 mat:
-	material_flat.albedo_color  = Color(0.6, 1, 0.3)
-	material_flat.roughness     = .9
-	material_flat.metallic      =  1
+	material_flat.albedo_color = Color(0.7, 1, 0.6)
+	material_flat.roughness = .9
+	material_flat.metallic = .2
 
-	#  hill01 mat:
-	material_hill.albedo_color  = Color(0.6, 1, 0.3)
-	material_hill.roughness     = .9
-	material_hill.metallic      =  1
+#	#  hill01 mat:
+#	material_hill.set_shader_param("albedo_color", Color(0.6, 1, 0.3))
+#	material_hill.set_shader_param("roughness", .9)
+#	material_hill.set_shader_param("metallic", .2)
 
 	var flat_count = 0
 	var hill_count = 0
@@ -76,13 +80,15 @@ func multimesh_factory() -> void:
 	terrain_data[0][1].multimesh.transform_format  = MultiMesh.TRANSFORM_3D
 	terrain_data[0][1].multimesh.instance_count    = flat_count
 	terrain_data[0][1].material_override           = material_flat
+#	terrain_data[0][1].scale           = Vector3(10, 10, 10)
 
 	#  hill01:
 	terrain_data[1][1].multimesh       = MultiMesh.new()
 	terrain_data[1][1].multimesh.mesh  = load("res://data/models/map/tile/hill01.obj")
 	terrain_data[1][1].multimesh.transform_format  = MultiMesh.TRANSFORM_3D
 	terrain_data[1][1].multimesh.instance_count    = hill_count
-	terrain_data[1][1].material_override           = material_hill
+	terrain_data[1][1].material_override           = material_flat
+#	terrain_data[1][1].scale           = Vector3(10, 10, 10)
 
 	var i_flat = 0
 	var i_hill = 0
