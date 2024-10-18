@@ -39,7 +39,7 @@ func map_gen(s1: int, s2: int) -> void:
 			var random_rotation = deg2rad(randi() % 6 * 60)
 			transform.basis = Basis(Vector3(0, 1, 0), random_rotation)
 
-			if randf() < 0.2:
+			if randf() < 0.12:
 				map_data.append({"type": "hill", "transform": transform})
 			else:
 				map_data.append({"type": "flat", "transform": transform})
@@ -56,18 +56,19 @@ func multimesh_factory() -> void:
 #	var material_hill  = SpatialMaterial.new()
 
 	#  flat01 mat:
-	material_flat.albedo_color = Color(0.7, 1, 0.6)
-	material_flat.roughness = .9
-	material_flat.metallic = .2
+	material_flat.albedo_color                = Color(0.7, 1, 0.6)
+	material_flat.roughness                   = .9
+	material_flat.metallic                    = 0.0
+	material_flat.vertex_color_use_as_albedo  = true
 
 #	#  hill01 mat:
 #	material_hill.set_shader_param("albedo_color", Color(0.6, 1, 0.3))
 #	material_hill.set_shader_param("roughness", .9)
 #	material_hill.set_shader_param("metallic", .2)
+#	material_hill.vertex_color_use_as_albedo  = true
 
 	var flat_count = 0
 	var hill_count = 0
-
 	for tile in map_data:
 		if tile["type"] == "flat":
 			flat_count += 1
@@ -78,16 +79,20 @@ func multimesh_factory() -> void:
 	terrain_data[0][1].multimesh       = MultiMesh.new()
 	terrain_data[0][1].multimesh.mesh  = load("res://data/models/map/tile/flat01.obj")
 	terrain_data[0][1].multimesh.transform_format  = MultiMesh.TRANSFORM_3D
-	terrain_data[0][1].multimesh.instance_count    = flat_count
+	terrain_data[0][1].multimesh.color_format      = MultiMesh.COLOR_FLOAT
 	terrain_data[0][1].material_override           = material_flat
+	terrain_data[0][1].multimesh.instance_count    = flat_count
+	terrain_data[0][1].generate_lightmap           = false
 #	terrain_data[0][1].scale           = Vector3(10, 10, 10)
 
 	#  hill01:
 	terrain_data[1][1].multimesh       = MultiMesh.new()
 	terrain_data[1][1].multimesh.mesh  = load("res://data/models/map/tile/hill01.obj")
 	terrain_data[1][1].multimesh.transform_format  = MultiMesh.TRANSFORM_3D
-	terrain_data[1][1].multimesh.instance_count    = hill_count
+	terrain_data[1][1].multimesh.color_format      = MultiMesh.COLOR_FLOAT
 	terrain_data[1][1].material_override           = material_flat
+	terrain_data[1][1].multimesh.instance_count    = hill_count
+	terrain_data[1][1].generate_lightmap           = false
 #	terrain_data[1][1].scale           = Vector3(10, 10, 10)
 
 	var i_flat = 0
@@ -108,8 +113,7 @@ func multimesh_factory() -> void:
 
 
 
-
-func hex_to_world(r, q) -> Vector3:
-	var x = hex_size * 3 * .5 * q
-	var z = hex_size * sqrt(3) * (r + q * .5)
+func hex_to_world(xx:int, yy:int) -> Vector3:
+	var x = hex_size * 3 * .5 * yy
+	var z = hex_size * sqrt(3) * (xx + yy * .5)
 	return Vector3(x, 0, z)

@@ -1,6 +1,5 @@
 extends Camera
 
-
 var move_speed_add := 0.0
 var zoom_speed     := 0.0
 var move_vector    := Vector3()
@@ -23,13 +22,18 @@ var max_d  :=  0.0
 var min_sd :=  60
 var max_sd :=  80
 
-
 var hex_radius    = 2.0
 var selected_hex  = null
 
-var immediate_geometry : ImmediateGeometry
+#  cały multimesh:
+var multimesh_instance_1 : MultiMeshInstance
+var multimesh_instance_2 : MultiMeshInstance
 
+# Zmienna na indeks wybranego hexa
+var selected_hex_index    := -1
+var selected_hex_instance :=  1
 
+##  Holders:
 var xx    : float
 
 
@@ -38,9 +42,10 @@ var xx    : float
 
 
 func _ready() -> void:
-	immediate_geometry  = ImmediateGeometry.new()
-	add_child(immediate_geometry)
 	cam_mod()
+	multimesh_instance_1 = get_parent().terrain_data[0][1]
+	multimesh_instance_2 = get_parent().terrain_data[1][1]
+
 
 
 
@@ -77,7 +82,79 @@ func _process(delta: float) -> void:
 	if xx != target_sd:
 		$"%Sun".directional_shadow_max_distance = lerp(xx, target_sd, .6)
 
-	update_selected_hex()
+	# Sprawdzenie hexa pod kursorem
+	var new_hex_index_1 = get_hex_at_mouse(multimesh_instance_1)
+	var new_hex_index_2 = get_hex_at_mouse(multimesh_instance_2)
+
+	# Resetowanie koloru poprzedniego wybranego hexa
+	if selected_hex_index != -1:
+		if selected_hex_instance == 1:
+			multimesh_instance_1.multimesh.set_instance_color(selected_hex_index, Color(1, 1, 1))
+		elif selected_hex_instance == 2:
+			multimesh_instance_2.multimesh.set_instance_color(selected_hex_index, Color(1, 1, 1))
+
+	# Zmiana koloru nowego wybranego hexa
+	if new_hex_index_1 != -1:
+		multimesh_instance_1.multimesh.set_instance_color(new_hex_index_1, Color(.5, 1, .5))
+		selected_hex_instance = 1
+		selected_hex_index = new_hex_index_1
+	elif new_hex_index_2 != -1:
+		multimesh_instance_2.multimesh.set_instance_color(new_hex_index_2, Color(.5, 1, .5))
+		selected_hex_instance = 2
+		selected_hex_index = new_hex_index_2
+
+
+
+func get_hex_at_mouse(multimesh_instance: MultiMeshInstance):
+	var mouse_pos = get_viewport().get_mouse_position()
+	var from = project_ray_origin(mouse_pos)
+	var to = from + project_ray_normal(mouse_pos) * 100  # Promień w przestrzeni 3D
+
+	var hit_position = intersect_ray_with_plane(from, to)
+
+	if hit_position:
+		var hex_coords = world_to_hex(hit_position)
+		return get_hex_instance_index(hex_coords, multimesh_instance)
+
+	return -1
+
+
+# Oblicza pozycję promienia na płaszczyźnie
+func intersect_ray_with_plane(from, to):
+	var plane = Plane(Vector3(0, 1, 0), 0)  # Zakładając, że twoje heksy są na płaskiej powierzchni
+	var hit_position = plane.intersects_segment(from, to)
+
+	if hit_position != null:
+		if plane.has_point(hit_position):
+			return hit_position
+
+	return null
+
+
+
+
+
+func world_to_hex(pos: Vector3) -> Vector2:
+	var q = pos.x / (hex_radius * 3 * .5)  # Uwzględnia szerokość heksa w osi X
+	var r = (pos.z - (q * hex_radius * sqrt(3) * .5)) / (hex_radius * sqrt(3))  # Uwzględnia przesunięcie na osi Z
+
+	# Zaokrąglamy współrzędne q i r
+	var rounded_q = round(q)
+	var rounded_r = round(r)
+
+	return Vector2(rounded_q, rounded_r).rotated(33)
+
+
+
+
+# Funkcja, która zwraca indeks instancji MultiMesh na podstawie pozycji hexa
+func get_hex_instance_index(hex_pos: Vector2, multimesh_instance: MultiMeshInstance) -> int:
+	for i in range(multimesh_instance.multimesh.instance_count):
+		var instance_pos = multimesh_instance.multimesh.get_instance_transform(i).origin
+		var hex_from_instance = world_to_hex(instance_pos)
+		if hex_from_instance == hex_pos:
+			return i
+	return -1
 
 
 
@@ -110,7 +187,6 @@ func _input(event) -> void:
 
 
 
-
 func cam_mod(move := 0.0) -> void:
 	var ratio      := (global_transform.origin.y - min_h) / (max_h - min_h)
 	zoom_speed      = clamp(zoom_speed + move, -def_zoom_speed, def_zoom_speed)
@@ -122,67 +198,3 @@ func cam_mod(move := 0.0) -> void:
 	target_sd    = lerp(min_sd, max_sd, ratio)
 
 
-
-
-
-
-func update_selected_hex() -> void:
-	var viewport_size = get_viewport().size
-	var center_screen = viewport_size / 2  # Środek ekranu
-
-	# Rzutowanie promienia względem kamery ze środka ekranu w kierunku kursora
-	var from = project_ray_origin(center_screen)  # Start promienia w środku ekranu
-	var to = from + project_ray_normal(center_screen) * 100  # Kierunek promienia
-
-	# Rysowanie linii debugowej
-	draw_debug_line(from, to)
-
-	# Sprawdzanie przecięcia promienia z obiektami w świecie
-	var space_state = get_world().direct_space_state
-	var result = space_state.intersect_ray(from, to)
-
-	if result:
-		var hit_pos = result.position  # Pozycja przecięcia promienia z obiektem
-		var hex_coords = world_to_hex(hit_pos)  # Zamiana pozycji na współrzędne heksagonalne
-		selected_hex = hex_coords
-#		print("Heks na współrzędnych: ", hex_coords)
-	else:
-		selected_hex = null
-#		print("Kursor nie jest nad żadnym heksem.")
-
-func draw_debug_line(from, to) -> void:
-	immediate_geometry.clear()
-	immediate_geometry.begin(Mesh.PRIMITIVE_LINES, null)
-	immediate_geometry.set_color(Color(1, 0, 0))  # Czerwony kolor
-	immediate_geometry.add_vertex(from)  # Start linii w pozycji kamery
-	immediate_geometry.add_vertex(to)    # Koniec linii w kierunku kursora
-	immediate_geometry.end()
-
-# Funkcja przeliczająca współrzędne świata na współrzędne heksagonalne
-func world_to_hex(world_pos: Vector3) -> Vector3:
-	var q = (world_pos.x * sqrt(3)/3 - world_pos.z / 3) / hex_radius
-	var r = world_pos.z * 2/3 / hex_radius
-	return cube_round(q, r)
-
-# Zaokrąglanie współrzędnych heksagonalnych do najbliższego heksa
-func cube_round(q, r) -> Vector3:
-	var x = q
-	var z = r
-	var y = -x - z
-
-	var rx = round(x)
-	var ry = round(y)
-	var rz = round(z)
-
-	var x_diff = abs(rx - x)
-	var y_diff = abs(ry - y)
-	var z_diff = abs(rz - z)
-
-	if x_diff > y_diff and x_diff > z_diff:
-		rx = -ry - rz
-	elif y_diff > z_diff:
-		ry = -rx - rz
-	else:
-		rz = -rx - ry
-
-	return Vector3(rx, ry, rz)

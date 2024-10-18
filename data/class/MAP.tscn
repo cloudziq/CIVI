@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://def_env.tres" type="Environment" id=1]
 [ext_resource path="res://data/class/Camera.gd" type="Script" id=2]
@@ -9,6 +9,16 @@ albedo_color = Color( 0.635294, 0.635294, 0.635294, 1 )
 metallic = 0.2
 metallic_specular = 1.0
 roughness = 0.24
+
+[sub_resource type="SpatialMaterial" id=2]
+
+[sub_resource type="PrismMesh" id=3]
+material = SubResource( 2 )
+
+[sub_resource type="MultiMesh" id=4]
+instance_count = 2
+mesh = SubResource( 3 )
+transform_2d_array = PoolVector2Array( 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 )
 
 [node name="MAP" type="Spatial"]
 script = ExtResource( 3 )
@@ -58,3 +68,7 @@ radius = 1.6
 radial_segments = 20
 rings = 20
 material = SubResource( 1 )
+
+[node name="MultiMeshInstance" type="MultiMeshInstance" parent="."]
+visible = false
+multimesh = SubResource( 4 )
