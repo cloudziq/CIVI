@@ -105,9 +105,37 @@ func _process(delta: float) -> void:
 
 
 
+
+
+func _input(event) -> void:
+	if Input.is_action_pressed("move_L"):
+		move_vector.x = -def_move_speed - move_speed_add
+	elif Input.is_action_pressed("move_R"):
+		move_vector.x = def_move_speed + move_speed_add
+	else:
+		move_vector.x = 0
+
+	if Input.is_action_pressed("move_U"):
+		move_vector.z = -def_move_speed - move_speed_add
+	elif Input.is_action_pressed("move_D"):
+		move_vector.z = def_move_speed + move_speed_add
+	else:
+		move_vector.z = 0
+
+	#  Mouse zoom:
+	if event is InputEventMouseButton:
+		if event.is_action_pressed("zoom+"):
+			cam_mod(-def_zoom_speed)
+		elif event.is_action_pressed("zoom-"):
+			cam_mod(def_zoom_speed)
+
+
+
+
+
 func get_hex_at_mouse(multimesh_instance: MultiMeshInstance):
 	var mouse_pos = get_viewport().get_mouse_position()
-	var from = project_ray_origin(mouse_pos)
+	var from = project_ray_origin(mouse_pos + Vector2(+.5, -.5))
 	var to = from + project_ray_normal(mouse_pos) * 100  # Promień w przestrzeni 3D
 
 	var hit_position = intersect_ray_with_plane(from, to)
@@ -142,7 +170,7 @@ func world_to_hex(pos: Vector3) -> Vector2:
 	var rounded_q = round(q)
 	var rounded_r = round(r)
 
-	return Vector2(rounded_q, rounded_r).rotated(33)
+	return Vector2(rounded_q, rounded_r).rotated(18)
 
 
 
@@ -156,32 +184,6 @@ func get_hex_instance_index(hex_pos: Vector2, multimesh_instance: MultiMeshInsta
 			return i
 	return -1
 
-
-
-
-
-
-func _input(event) -> void:
-	if Input.is_action_pressed("move_L"):
-		move_vector.x = -def_move_speed - move_speed_add
-	elif Input.is_action_pressed("move_R"):
-		move_vector.x = def_move_speed + move_speed_add
-	else:
-		move_vector.x = 0
-
-	if Input.is_action_pressed("move_U"):
-		move_vector.z = -def_move_speed - move_speed_add
-	elif Input.is_action_pressed("move_D"):
-		move_vector.z = def_move_speed + move_speed_add
-	else:
-		move_vector.z = 0
-
-	#  Mouse zoom:
-	if event is InputEventMouseButton:
-		if event.is_action_pressed("zoom+"):
-			cam_mod(-def_zoom_speed)
-		elif event.is_action_pressed("zoom-"):
-			cam_mod(def_zoom_speed)
 
 
 

@@ -35,6 +35,7 @@ func map_gen(s1: int, s2: int) -> void:
 		for y in range(0, s2):
 			transform = Transform()
 			transform.origin = hex_to_world(x, y)
+			transform.basis.scaled(Vector3(1, .9, 1))
 
 			var random_rotation = deg2rad(randi() % 6 * 60)
 			transform.basis = Basis(Vector3(0, 1, 0), random_rotation)
@@ -56,7 +57,7 @@ func multimesh_factory() -> void:
 #	var material_hill  = SpatialMaterial.new()
 
 	#  flat01 mat:
-	material_flat.albedo_color                = Color(0.7, 1, 0.6)
+	material_flat.albedo_color                = Color(0.92, 1, 0.8)
 	material_flat.roughness                   = .9
 	material_flat.metallic                    = 0.0
 	material_flat.vertex_color_use_as_albedo  = true
@@ -76,11 +77,14 @@ func multimesh_factory() -> void:
 			hill_count += 1
 
 	#  flat01:
-	terrain_data[0][1].multimesh       = MultiMesh.new()
+	terrain_data[0][1].multimesh                   = MultiMesh.new()
 	terrain_data[0][1].multimesh.mesh  = load("res://data/models/map/tile/flat01.obj")
+	terrain_data[0][1].multimesh.mesh.set("Scale.y", 1.9)
 	terrain_data[0][1].multimesh.transform_format  = MultiMesh.TRANSFORM_3D
 	terrain_data[0][1].multimesh.color_format      = MultiMesh.COLOR_FLOAT
+
 	terrain_data[0][1].material_override           = material_flat
+
 	terrain_data[0][1].multimesh.instance_count    = flat_count
 	terrain_data[0][1].generate_lightmap           = false
 #	terrain_data[0][1].scale           = Vector3(10, 10, 10)
