@@ -43,8 +43,8 @@ var xx    : float
 
 func _ready() -> void:
 	cam_mod()
-	multimesh_instance_1 = get_parent().terrain_data[0][1]
-	multimesh_instance_2 = get_parent().terrain_data[1][1]
+	multimesh_instance_1 = get_parent().visual_data[0][1]
+	multimesh_instance_2 = get_parent().visual_data[1][1]
 
 
 
@@ -164,13 +164,13 @@ func intersect_ray_with_plane(from, to):
 
 func world_to_hex(pos: Vector3) -> Vector2:
 	var q = pos.x / (hex_radius * 3 * .5)  # Uwzględnia szerokość heksa w osi X
-	var r = (pos.z - (q * hex_radius * sqrt(3) * .5)) / (hex_radius * sqrt(3))  # Uwzględnia przesunięcie na osi Z
+	var r = (pos.z - (q * hex_radius * sqrt(3) * .5)) / (hex_radius * sqrt(3))
 
 	# Zaokrąglamy współrzędne q i r
 	var rounded_q = round(q)
 	var rounded_r = round(r)
 
-	return Vector2(rounded_q, rounded_r).rotated(18)
+	return Vector2(rounded_q, rounded_r).rotated(16)
 
 
 
@@ -192,7 +192,7 @@ func get_hex_instance_index(hex_pos: Vector2, multimesh_instance: MultiMeshInsta
 func cam_mod(move := 0.0) -> void:
 	var ratio      := (global_transform.origin.y - min_h) / (max_h - min_h)
 	zoom_speed      = clamp(zoom_speed + move, -def_zoom_speed, def_zoom_speed)
-	move_speed_add  = def_move_speed * (1 + ratio * 22)
+	move_speed_add  = def_move_speed * (1 + ratio * 32)
 
 	target_tilt  = lerp(min_a,  max_a,  ratio)
 	target_fov   = lerp(min_f,  max_f,  ratio)

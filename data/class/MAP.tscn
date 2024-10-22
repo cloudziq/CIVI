@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://def_env.tres" type="Environment" id=1]
 [ext_resource path="res://data/class/Camera.gd" type="Script" id=2]
 [ext_resource path="res://data/class/MAP.gd" type="Script" id=3]
+[ext_resource path="res://data/models/map/tile/flat01.obj" type="ArrayMesh" id=4]
 
 [sub_resource type="SpatialMaterial" id=1]
 albedo_color = Color( 0.635294, 0.635294, 0.635294, 1 )
@@ -10,15 +11,11 @@ metallic = 0.05
 metallic_specular = 1.0
 roughness = 0.22
 
-[sub_resource type="SpatialMaterial" id=2]
-
-[sub_resource type="PrismMesh" id=3]
-material = SubResource( 2 )
-
 [sub_resource type="MultiMesh" id=4]
-instance_count = 2
-mesh = SubResource( 3 )
-transform_2d_array = PoolVector2Array( 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 )
+instance_count = 1
+visible_instance_count = 1
+mesh = ExtResource( 4 )
+transform_2d_array = PoolVector2Array( 1, 0, 0, 1, 0, 0 )
 
 [node name="MAP" type="Spatial"]
 script = ExtResource( 3 )

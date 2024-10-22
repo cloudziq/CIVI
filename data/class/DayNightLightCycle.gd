@@ -12,8 +12,8 @@ var day_length   := 20.0    ## in seconds
 var night_length := 16.0
 
 var sun_min_h  :=   0.0    ## minimalna wysokość słońca (przy wschodzie i zachodzie)
-var sun_max_h  := -40.0    ## maksymalna wysokość słońca (w południe)
-var moon_min_h := -20.0    ## minimalna wysokość księżyca (przy zachodzie)
+var sun_max_h  := -20.0    ## maksymalna wysokość słońca (w południe)
+var moon_min_h := -4.0    ## minimalna wysokość księżyca (przy zachodzie)
 var moon_max_h := -60.0    ## maksymalna wysokość księżyca (noc)
 
 var start_pos := 220.0     ## początkowa pozycja kątowa ciał niebieskich
@@ -40,7 +40,7 @@ func _process(delta: float) -> void:
 		sun_cycle += delta
 
 		if sun_cycle < day_length:
-			if sun_cycle > day_length - (day_length * .06) : moon_vis  = true
+			if sun_cycle > day_length - (day_length * .082) : moon_vis  = true
 			sun_p  = sun_cycle / day_length
 
 			var current_dist      = lerp(start_pos, end_pos, sun_p) * rot_dir
@@ -53,7 +53,7 @@ func _process(delta: float) -> void:
 		if moon_cycle == 0: aura_control(0)
 		moon_cycle += delta
 		if moon_cycle < night_length:
-			if moon_cycle > night_length - (night_length * .1) : sun_vis  = true
+			if moon_cycle > night_length - (night_length * .16) : sun_vis  = true
 			moon_p  = moon_cycle / night_length
 
 			var current_dist      = lerp(start_pos, end_pos, moon_p) * rot_dir
@@ -69,7 +69,7 @@ var color_table  = [
 	 "moon_color_1": Color(.14, .16, .28),
 	 "moon_color_2": Color(.1, .12, .22)
 	},
-	{"sun_color_0": Color(.2, .12, .08),
+	{"sun_color_0": Color(.06, .01, .04),
 	 "sun_color_1": Color(.82, .76, .68),
 	 "sun_color_2": Color(.56, .42, .38)
 	}
