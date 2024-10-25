@@ -1,5 +1,35 @@
 extends Camera
 
+
+var map_data : Array
+var vis_data : Dictionary
+
+
+var def_zoom_speed := 30.0
+var def_move_speed := 2.0
+
+var min_h  :=  14.0
+var max_h  :=  40.0
+var min_a  := -36.0
+var max_a  := -80.0
+var min_f  :=  52.0
+var max_f  :=  96.0
+var min_d  :=  0.08
+var max_d  :=  0.00
+var min_sd :=  50
+var max_sd :=  100
+
+
+var curr_hex_index := 0
+var prev_hex_index := 0
+var curr_multimesh :  MultiMesh
+var prev_multimesh :  MultiMesh
+
+var hex_radius      = 2
+
+
+##  Holders:
+var xx             := 0.0
 var move_speed_add := 0.0
 var zoom_speed     := 0.0
 var move_vector    := Vector3()
@@ -7,34 +37,8 @@ var target_tilt    := 0.0
 var target_fov     := 0.0
 var target_dof     := 0.0
 var target_sd      := 0.0
-
-var def_zoom_speed := 25.0
-var def_move_speed := 2.0
-
-var min_h  :=  14.0
-var max_h  :=  40.0
-var min_a  := -36.0
-var max_a  := -76.0
-var min_f  :=  52.0
-var max_f  :=  96.0
-var min_d  :=  0.06
-var max_d  :=  0.0
-var min_sd :=  60
-var max_sd :=  80
-
-var hex_radius    = 2.0
-var selected_hex  = null
-
-#  cały multimesh:
-var multimesh_instance_1 : MultiMeshInstance
-var multimesh_instance_2 : MultiMeshInstance
-
-# Zmienna na indeks wybranego hexa
-var selected_hex_index    := -1
-var selected_hex_instance :=  1
-
-##  Holders:
-var xx    : float
+var time_passed    := 0.0
+var frame_count    := 0
 
 
 
@@ -43,18 +47,18 @@ var xx    : float
 
 func _ready() -> void:
 	cam_mod()
-	multimesh_instance_1 = get_parent().visual_data[0][1]
-	multimesh_instance_2 = get_parent().visual_data[1][1]
 
 
 
 
 
 
-func _process(delta: float) -> void:
+func _process(dt: float) -> void:
+	time_passed += dt
+
 	#  Zoom:
 	if zoom_speed != 0:
-		global_transform.origin.y  = clamp(global_transform.origin.y+zoom_speed*delta,min_h,max_h)
+		global_transform.origin.y  = clamp(global_transform.origin.y + zoom_speed *dt,min_h,max_h)
 		zoom_speed                 = lerp(zoom_speed, 0.0, .16)
 		cam_mod()
 
@@ -62,7 +66,7 @@ func _process(delta: float) -> void:
 	if move_vector != Vector3():
 		var vector  = transform.basis.x * move_vector.x + transform.basis.z * move_vector.z
 		vector.y    = 0
-		global_transform.origin += vector.normalized() * move_vector.length() * delta
+		global_transform.origin += vector.normalized() * move_vector.length() * dt
 
 	#  Tilt:
 	if rotation_degrees.x != target_tilt:
@@ -82,26 +86,11 @@ func _process(delta: float) -> void:
 	if xx != target_sd:
 		$"%Sun".directional_shadow_max_distance = lerp(xx, target_sd, .6)
 
-	# Sprawdzenie hexa pod kursorem
-	var new_hex_index_1 = get_hex_at_mouse(multimesh_instance_1)
-	var new_hex_index_2 = get_hex_at_mouse(multimesh_instance_2)
 
-	# Resetowanie koloru poprzedniego wybranego hexa
-	if selected_hex_index != -1:
-		if selected_hex_instance == 1:
-			multimesh_instance_1.multimesh.set_instance_color(selected_hex_index, Color(1, 1, 1))
-		elif selected_hex_instance == 2:
-			multimesh_instance_2.multimesh.set_instance_color(selected_hex_index, Color(1, 1, 1))
+	if time_passed > .1:
+		time_passed = 0
+		get_hex_at_mouse()
 
-	# Zmiana koloru nowego wybranego hexa
-	if new_hex_index_1 != -1:
-		multimesh_instance_1.multimesh.set_instance_color(new_hex_index_1, Color(.5, 1, .5))
-		selected_hex_instance = 1
-		selected_hex_index = new_hex_index_1
-	elif new_hex_index_2 != -1:
-		multimesh_instance_2.multimesh.set_instance_color(new_hex_index_2, Color(.5, 1, .5))
-		selected_hex_instance = 2
-		selected_hex_index = new_hex_index_2
 
 
 
@@ -133,57 +122,58 @@ func _input(event) -> void:
 
 
 
-func get_hex_at_mouse(multimesh_instance: MultiMeshInstance):
-	var mouse_pos = get_viewport().get_mouse_position()
-	var from = project_ray_origin(mouse_pos + Vector2(+.5, -.5))
-	var to = from + project_ray_normal(mouse_pos) * 100  # Promień w przestrzeni 3D
 
+func get_hex_at_mouse():
+	var mouse_pos = get_viewport().get_mouse_position()
+	var from = project_ray_origin(mouse_pos + Vector2(-.25, +.5))
+	var to = from + project_ray_normal(mouse_pos) * 100
 	var hit_position = intersect_ray_with_plane(from, to)
+	var err  := false
 
 	if hit_position:
-		var hex_coords = world_to_hex(hit_position)
-		return get_hex_instance_index(hex_coords, multimesh_instance)
+		var coord = world_to_hex(hit_position)
 
-	return -1
+		if coord.x < 0 or coord.x > map_data[0].size()-1: err = true
+		if coord.y < 0 or coord.y > map_data[1].size()-1: err = true
+
+		if not err:
+			var hex_type    = map_data[coord.x][coord.y]["type"]
+			curr_hex_index  = map_data[coord.x][coord.y]["id"]
+			curr_multimesh  = vis_data[hex_type].multimesh
+
+			if curr_hex_index != prev_hex_index or curr_multimesh != prev_multimesh:
+				curr_multimesh.set_instance_color(curr_hex_index, Color(.4, .6, 2))
+				prev_multimesh.set_instance_color(prev_hex_index, Color(1,1,1))
+				prev_hex_index  = curr_hex_index
+				prev_multimesh  = curr_multimesh
 
 
-# Oblicza pozycję promienia na płaszczyźnie
+
+
+
+
 func intersect_ray_with_plane(from, to):
-	var plane = Plane(Vector3(0, 1, 0), 0)  # Zakładając, że twoje heksy są na płaskiej powierzchni
+	var plane = Plane(Vector3(0, 1, 0), 0)
 	var hit_position = plane.intersects_segment(from, to)
 
 	if hit_position != null:
 		if plane.has_point(hit_position):
 			return hit_position
-
 	return null
 
 
 
 
 
+
 func world_to_hex(pos: Vector3) -> Vector2:
-	var q = pos.x / (hex_radius * 3 * .5)  # Uwzględnia szerokość heksa w osi X
+	var q = pos.x / (hex_radius * 3 * .5)
 	var r = (pos.z - (q * hex_radius * sqrt(3) * .5)) / (hex_radius * sqrt(3))
 
-	# Zaokrąglamy współrzędne q i r
-	var rounded_q = round(q)
-	var rounded_r = round(r)
+	var rounded_x = round(q)
+	var rounded_y = round(r)
 
-	return Vector2(rounded_q, rounded_r).rotated(16)
-
-
-
-
-# Funkcja, która zwraca indeks instancji MultiMesh na podstawie pozycji hexa
-func get_hex_instance_index(hex_pos: Vector2, multimesh_instance: MultiMeshInstance) -> int:
-	for i in range(multimesh_instance.multimesh.instance_count):
-		var instance_pos = multimesh_instance.multimesh.get_instance_transform(i).origin
-		var hex_from_instance = world_to_hex(instance_pos)
-		if hex_from_instance == hex_pos:
-			return i
-	return -1
-
+	return Vector2(rounded_y, rounded_x)
 
 
 
@@ -200,3 +190,11 @@ func cam_mod(move := 0.0) -> void:
 	target_sd    = lerp(min_sd, max_sd, ratio)
 
 
+
+
+
+
+func reload_map_data() -> void:
+	map_data        = get_parent().map_data
+	vis_data        = get_parent().visual_data
+	prev_multimesh  = vis_data["flat01"].multimesh

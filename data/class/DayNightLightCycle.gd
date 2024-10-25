@@ -8,13 +8,13 @@ onready var env  := $"../%Env"
 
 
 ## Main settings:
-var day_length   := 20.0    ## in seconds
+var day_length   := 40.0    ## in seconds
 var night_length := 16.0
 
 var sun_min_h  :=   0.0    ## minimalna wysokość słońca (przy wschodzie i zachodzie)
-var sun_max_h  := -20.0    ## maksymalna wysokość słońca (w południe)
-var moon_min_h := -4.0    ## minimalna wysokość księżyca (przy zachodzie)
-var moon_max_h := -60.0    ## maksymalna wysokość księżyca (noc)
+var sun_max_h  := -35.0    ## maksymalna wysokość słońca (w południe)
+var moon_min_h :=   0.0    ## minimalna wysokość księżyca (przy zachodzie)
+var moon_max_h := -70.0    ## maksymalna wysokość księżyca (noc)
 
 var start_pos := 220.0     ## początkowa pozycja kątowa ciał niebieskich
 var end_pos   := 20.0      ## końcowa pozycja kątowa ciał niebieskich
@@ -25,42 +25,53 @@ var moon_vis   := false
 
 
 ## Holders:
-var sun_p      := 0.0
-var moon_p     := 0.0
-var sun_cycle  := 0.0
-var moon_cycle := 0.0
+var sun_p       := 0.0
+var moon_p      := 0.0
+var sun_cycle   := 0.0
+var moon_cycle  := 0.0
 
 
 
 
 
-func _process(delta: float) -> void:
-	if sun_vis:
-		if sun_cycle == 0: aura_control(1)
-		sun_cycle += delta
+func _ready() -> void:
+	moon.light_color  = Color(0,0,0)
 
-		if sun_cycle < day_length:
-			if sun_cycle > day_length - (day_length * .082) : moon_vis  = true
-			sun_p  = sun_cycle / day_length
 
-			var current_dist      = lerp(start_pos, end_pos, sun_p) * rot_dir
-			var angle_x: float    = lerp(sun_min_h, sun_max_h, sin(sun_p * PI))
-			sun.rotation_degrees  = Vector3(angle_x, current_dist, 0)
-		else:
-			sun_cycle  = 0    ;    sun_vis  = false
 
-	if moon_vis:
-		if moon_cycle == 0: aura_control(0)
-		moon_cycle += delta
-		if moon_cycle < night_length:
-			if moon_cycle > night_length - (night_length * .16) : sun_vis  = true
-			moon_p  = moon_cycle / night_length
 
-			var current_dist      = lerp(start_pos, end_pos, moon_p) * rot_dir
-			var angle_x: float    = lerp(moon_min_h, moon_max_h, sin(moon_p * PI))
-			moon.rotation_degrees  = Vector3(angle_x, current_dist, 0)
-		else:
-			moon_cycle  = 0    ;    moon_vis  = false
+func _process(dt: float) -> void:
+		if sun_vis:
+			if sun_cycle == 0: aura_control(1)
+			sun_cycle += dt
+
+			if sun_cycle < day_length:
+				if sun_cycle > day_length - (day_length * .082) : moon_vis  = true
+				sun_p  = sun_cycle / day_length
+
+				var current_dist      = lerp(start_pos, end_pos, sun_p) * rot_dir
+				var angle_x: float    = lerp(sun_min_h, sun_max_h, sin(sun_p * PI))
+				sun.rotation_degrees  = Vector3(angle_x, current_dist, 0)
+			else:
+				sun_cycle  = 0
+				sun_vis  = false
+
+		if moon_vis:
+			if moon_cycle == 0: aura_control(0)
+			moon_cycle += dt
+			if moon_cycle < night_length:
+				if moon_cycle > night_length - (night_length * .16) : sun_vis  = true
+				moon_p  = moon_cycle / night_length
+
+				var current_dist       = lerp(start_pos, end_pos, moon_p) * rot_dir
+				var angle_x: float     = lerp(moon_min_h, moon_max_h, sin(moon_p * PI))
+				moon.rotation_degrees  = Vector3(angle_x, current_dist, 0)
+			else:
+				moon_cycle  = 0
+				moon_vis  = false
+
+
+
 
 
 

@@ -26,18 +26,11 @@ boot_splash/image="res://logo.png"
 boot_splash/fullsize=false
 boot_splash/bg_color=Color( 0, 0, 0, 1 )
 
-[debug]
-
-gdscript/warnings/return_value_discarded=false
-
 [display]
 
 window/size/width=960
 window/size/height=480
 window/size/always_on_top=true
-window/vsync/use_vsync=false
-window/stretch/mode="viewport"
-window/stretch/aspect="expand"
 
 [gui]
 
@@ -99,12 +92,12 @@ ui_end={
 }
 zoom+={
 "deadzone": 0.5,
-"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":4,"pressed":false,"doubleclick":false,"script":null)
+"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":4,"canceled":false,"pressed":false,"doubleclick":false,"script":null)
  ]
 }
 zoom-={
 "deadzone": 0.5,
-"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":5,"pressed":false,"doubleclick":false,"script":null)
+"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":5,"canceled":false,"pressed":false,"doubleclick":false,"script":null)
  ]
 }
 move_U={
@@ -130,13 +123,15 @@ move_R={
 
 [physics]
 
-common/enable_pause_aware_picking=true
+common/physics_fps=30
+3d/active_soft_world=false
+3d/default_gravity=0.0
 
 [rendering]
 
 quality/driver/driver_name="GLES2"
 quality/directional_shadow/size.mobile=4096
 quality/filters/anisotropic_filter_level=1
+batching/lights/scissor_area_threshold=0.45
 environment/default_clear_color=Color( 0.439216, 0.439216, 0.439216, 1 )
-quality/filters/use_fxaa=true
 environment/default_environment="res://def_env.tres"

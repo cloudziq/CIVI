@@ -1,21 +1,25 @@
 extends Spatial
 
 
-var visual_data := [
-	["flat01", MultiMeshInstance.new()],
-	["hill01", MultiMeshInstance.new()],
-	["water", MultiMeshInstance.new()],
-	["mountain01", MultiMeshInstance.new()]
-]
-
-var noise      := OpenSimplexNoise.new()
-var hex_size   := 2
-var map_data   := []
-var hex_height  = 1.0
+var map_size        := Vector2(80, 80)
 
 
+## Holders:
+var flat_count     := 0
+var hill_count     := 0
+var water_count    := 0
+var mountain_count := 0
+var noise          := OpenSimplexNoise.new()
+var hex_radius     := 2
+var map_data       := []
 
-var mountain_amount := 20
+
+var visual_data    := {
+	"flat01":     MultiMeshInstance.new(),
+	"hill01":     MultiMeshInstance.new(),
+	"water01":    MultiMeshInstance.new(),
+	"mountain01": MultiMeshInstance.new(),
+}
 
 
 
@@ -24,14 +28,14 @@ var mountain_amount := 20
 
 func _ready() -> void:
 	randomize()
-	var LightCycle := DayNightLightCycle.new()
+	var LightCycle    := DayNightLightCycle.new()
 
-	noise.seed = randi()  # Losowy seed
-	noise.octaves = rand_range(4, 5)
-	noise.period = rand_range(12, 46)
-	noise.persistence = rand_range(6, 16)
+	noise.seed         = randi()
+	noise.octaves      = int(rand_range(3, 5))
+	noise.period       = rand_range(2, 5) * noise.octaves
+	noise.persistence  = rand_range(8, 12) * noise.octaves
 
-	map_gen(80, 80)
+	map_gen(map_size)
 	add_child(LightCycle)
 
 
@@ -39,12 +43,15 @@ func _ready() -> void:
 
 
 
-func map_gen(s1: int, s2: int) -> void:
+func map_gen(size:Vector2) -> void:
+	var s1 := int(size.x)
+	var s2 := int(size.y)
+
 	map_data.resize(s1)
 
-	for x in range(0, s1):
-		map_data[x] = []
-		for y in range(0, s2):
+	for x in range(s1):
+		map_data[x]  = []
+		for y in range(s2):
 			var transform = Transform()
 			transform.origin = hex_to_world(x, y)
 
@@ -54,147 +61,149 @@ func map_gen(s1: int, s2: int) -> void:
 			# Skalowanie koordynat dla większej zmienności(?)
 			var noise_value = noise.get_noise_2d(float(x) * .4, float(y) * .4)
 
-			# Korekta progów w zależności od wartości szumu Perlin'a
-			if noise_value > .3 and randf() < .2:
-				map_data[x].append({"type": "hill", "transform": transform})
+
+			if noise_value > .44 and randf() > .66:
+				map_data[x].append(
+					{"type": "mountain01", "transform": transform, "id": mountain_count})
+				mountain_count += 1
+
+			elif noise_value > .3 and randf() < .2:
+				map_data[x].append(
+					{"type": "hill01", "transform": transform, "id": hill_count})
+				hill_count += 1
+
 			elif noise_value > 0.12:
-				map_data[x].append({"type": "flat", "transform": transform})
+				map_data[x].append(
+					{"type": "flat01", "transform": transform, "id": flat_count})
+				flat_count += 1
+
 			else:
-				map_data[x].append({"type": "water", "transform": transform})
+				map_data[x].append(
+					{"type": "water01", "transform": transform, "id": water_count})
+				water_count += 1
 
-			if noise_value > .52 and randf() > .6:
-				map_data[x][y] = ({"type": "mountain", "transform": transform})
-
+	multimesh_define()
 #	generate_mountains()
-	multimesh_factory()
+#
+#
+#
+#
+#func generate_mountains() -> void:
+#	for i in range(mountain_amount):
+#		var x = randi() % int(map_size.x)
+#		var y = randi() % int(map_size.y)
+#
+#		if x >= 0 and x < map_size.x and y >= 0 and y < map_size.y:
+#			if map_data[x][y]["type"] != "mountain01":
+#				var transform = Transform()
+#				var random_rotation = deg2rad(randi() % 6 * 60)
+#
+#				transform.origin = hex_to_world(x, y)
+#				transform.basis = Basis(Vector3(0, 1, 0), random_rotation)
+#				map_data[x][y] = {"type": "mountain01", "transform": transform}
 
 
 
 
-func generate_mountains() -> void:
-	for i in range(mountain_amount):
-		var x = randi() % 80
-		var y = randi() % 80
-
-		if x >= 0 and x < 80 and y >= 0 and y < 80:
-			if map_data[x][y]["type"] != "mountain":
-				var transform = Transform()
-				var random_rotation = deg2rad(randi() % 6 * 60)
-
-				transform.origin = hex_to_world(x, y)
-				transform.basis = Basis(Vector3(0, 1, 0), random_rotation)
-				map_data[x][y] = {"type": "mountain", "transform": transform}
 
 
+func multimesh_define() -> void:
+	var material_flat     := SpatialMaterial.new()
+	var material_water    := SpatialMaterial.new()
 
-
-func multimesh_factory() -> void:
-	var material_flat = SpatialMaterial.new()
-	var material_water = SpatialMaterial.new()
-	var material_mountain = SpatialMaterial.new()
-
-	# flat01:
+	# flat01 material:
 	material_flat.albedo_color = Color(.92, 1, .8)
 	material_flat.roughness = .9
-	material_flat.metallic = .0
+	material_flat.metallic  = .1
 	material_flat.vertex_color_use_as_albedo = true
 
-	# water01:
+	# water01 material:
 	material_water.albedo_color = Color(.2, .4, .8)
 	material_water.roughness = .6
 	material_water.metallic = .2
 
-	# mountain01
-	material_mountain.albedo_color = Color(.82, .9, .7)
-	material_mountain.roughness = 1
-	material_mountain.metallic = .1
 
-
-	var flat_count = 0
-	var hill_count = 0
-	var water_count = 0
-	var mountain_count = 0
-
-	for row in map_data:
-		for tile in row:
-			match tile["type"]:
-				"flat":
-					flat_count += 1
-				"hill":
-					hill_count += 1
-				"water":
-					water_count += 1
-				"mountain":
-					mountain_count += 1
+	# multimesh creation:
+	var i :  MultiMeshInstance
 
 	# flat01:
-	visual_data[0][1].multimesh = MultiMesh.new()
-	visual_data[0][1].multimesh.mesh = load("res://data/models/map/tile/flat01.obj")
-	visual_data[0][1].multimesh.transform_format = MultiMesh.TRANSFORM_3D
-	visual_data[0][1].multimesh.color_format = MultiMesh.COLOR_FLOAT
-	visual_data[0][1].material_override = material_flat
-	visual_data[0][1].multimesh.instance_count = flat_count
+	i  = visual_data["flat01"]
+	i.multimesh                   = MultiMesh.new()
+	i.multimesh.mesh              = load("res://data/models/map/tile/flat01.obj")
+	i.multimesh.transform_format  = MultiMesh.TRANSFORM_3D
+	i.multimesh.color_format      = MultiMesh.COLOR_FLOAT
+	i.multimesh.instance_count    = flat_count
+	i.material_override           = material_flat
 
 	# hill01:
-	visual_data[1][1].multimesh = MultiMesh.new()
-	visual_data[1][1].multimesh.mesh = load("res://data/models/map/tile/hill01.obj")
-	visual_data[1][1].multimesh.transform_format = MultiMesh.TRANSFORM_3D
-	visual_data[1][1].multimesh.color_format = MultiMesh.COLOR_FLOAT
-	visual_data[1][1].material_override = material_flat
-	visual_data[1][1].multimesh.instance_count = hill_count
+	i  = visual_data["hill01"]
+	i.multimesh                   = MultiMesh.new()
+	i.multimesh.mesh              = load("res://data/models/map/tile/hill01.obj")
+	i.multimesh.transform_format  = MultiMesh.TRANSFORM_3D
+	i.multimesh.color_format      = MultiMesh.COLOR_FLOAT
+	i.multimesh.instance_count    = hill_count
+	i.material_override           = material_flat
 
-	# water:
-	visual_data[2][1].multimesh = MultiMesh.new()
-	visual_data[2][1].multimesh.mesh = load("res://data/models/map/tile/flat01.obj")
-	visual_data[2][1].multimesh.transform_format = MultiMesh.TRANSFORM_3D
-	visual_data[2][1].multimesh.color_format = MultiMesh.COLOR_FLOAT
-	visual_data[2][1].material_override = material_water
-	visual_data[2][1].multimesh.instance_count = water_count
+	# water01:
+	i  = visual_data["water01"]
+	i.multimesh                   = MultiMesh.new()
+	i.multimesh.mesh              = load("res://data/models/map/tile/flat01.obj")
+	i.multimesh.transform_format  = MultiMesh.TRANSFORM_3D
+	i.multimesh.color_format      = MultiMesh.COLOR_FLOAT
+	i.multimesh.instance_count    = water_count
+	i.material_override           = material_water
 
-	# mountain01:
-	visual_data[3][1].multimesh = MultiMesh.new()
-	visual_data[3][1].multimesh.mesh = load("res://data/models/map/tile/mountain01.obj")
-	visual_data[3][1].multimesh.transform_format = MultiMesh.TRANSFORM_3D
-	visual_data[3][1].multimesh.color_format = MultiMesh.COLOR_FLOAT
-	visual_data[3][1].material_override = material_mountain
-	visual_data[3][1].multimesh.instance_count = mountain_count
+	#  mountain01:
+	i = visual_data["mountain01"]
+	i.multimesh                   = MultiMesh.new()
+	i.multimesh.mesh              = load("res://data/models/map/tile/mountain01.obj")
+	i.multimesh.transform_format  = MultiMesh.TRANSFORM_3D
+	i.multimesh.color_format      = MultiMesh.COLOR_FLOAT
+	i.multimesh.instance_count    = mountain_count
+	i.material_override           = material_flat
 
 
-	var i_flat = 0
-	var i_hill = 0
-	var i_water = 0
-	var i_mountain = 0
+	var i_flat  := 0
+	var i_hill  := 0
+	var i_water := 0
+	var i_mount := 0
 
 	for row in map_data:
 		for tile in row:
-#			tile  = col["type"]
 			match tile["type"]:
-				"flat":
-					visual_data[0][1].multimesh.set_instance_transform(i_flat, tile["transform"])
+				"flat01":
+					visual_data["flat01"].multimesh.set_instance_transform(
+						i_flat, tile["transform"])
 					i_flat += 1
-				"hill":
-					visual_data[1][1].multimesh.set_instance_transform(i_hill, tile["transform"])
+				"hill01":
+					visual_data["hill01"].multimesh.set_instance_transform(
+						i_hill, tile["transform"])
 					i_hill += 1
-				"water":
+				"water01":
 					tile["transform"].origin.y -= .4
-					visual_data[2][1].multimesh.set_instance_transform(i_water, tile["transform"])
+					visual_data["water01"].multimesh.set_instance_transform(
+						i_water, tile["transform"])
 					i_water += 1
-				"mountain":
-#					tile["transform"].origin.y += .22
-					visual_data[3][1].multimesh.set_instance_transform(i_mountain, tile["transform"])
-					i_mountain += 1
-
-	add_child(visual_data[0][1])  # plains
-	add_child(visual_data[1][1])  # hills
-	add_child(visual_data[2][1])  # water
-	add_child(visual_data[3][1])  # mountains
+				"mountain01":
+					visual_data["mountain01"].multimesh.set_instance_transform(
+						i_mount, tile["transform"])
+					i_mount += 1
 
 
+
+#	for instance in visual_data:
+#		add_child(instance[1])
+	add_child(visual_data["flat01"])      # plains
+	add_child(visual_data["hill01"])      # hills
+	add_child(visual_data["water01"])     # water
+	add_child(visual_data["mountain01"])  # mountains
+
+	$Camera.reload_map_data()
 
 
 
 
 func hex_to_world(xx: int, yy: int) -> Vector3:
-	var x = hex_size * 3 * .5 * yy
-	var z = hex_size * sqrt(3) * (xx + yy * .5)
+	var x = hex_radius * 3 * .5 * yy
+	var z = hex_radius * sqrt(3) * (xx + yy * .5)
 	return Vector3(x, 0, z)
