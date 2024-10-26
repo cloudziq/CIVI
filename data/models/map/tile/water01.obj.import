@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/water01.obj-371dc64a53eda2f78083dddbcb2c14aa.mesh"
+
+[deps]
+
+files=[ "res://.import/water01.obj-371dc64a53eda2f78083dddbcb2c14aa.mesh" ]
+
+source_file="res://data/models/map/tile/water01.obj"
+dest_files=[ "res://.import/water01.obj-371dc64a53eda2f78083dddbcb2c14aa.mesh", "res://.import/water01.obj-371dc64a53eda2f78083dddbcb2c14aa.mesh" ]
+
+[params]
+
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+optimize_mesh_flags=4286
+generate_tangents=true
+vertex_cache_optimization=true
+octahedral_compression=true

@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://def_env.tres" type="Environment" id=1]
 [ext_resource path="res://data/class/Camera.gd" type="Script" id=2]
 [ext_resource path="res://data/class/MAP.gd" type="Script" id=3]
 [ext_resource path="res://data/models/map/tile/flat01.obj" type="ArrayMesh" id=4]
+[ext_resource path="res://data/models/map/tile/water01.obj" type="ArrayMesh" id=6]
 
 [sub_resource type="SpatialMaterial" id=1]
 params_diffuse_mode = 3
@@ -17,13 +18,32 @@ instance_count = 1
 mesh = ExtResource( 4 )
 transform_2d_array = PoolVector2Array( 1, 0, 0, 1, 0, 0 )
 
+[sub_resource type="OpenSimplexNoise" id=6]
+octaves = 6
+period = 22.1
+persistence = 0.4
+lacunarity = 0.32
+
+[sub_resource type="NoiseTexture" id=7]
+seamless = true
+as_normalmap = true
+bump_strength = 16.0
+noise = SubResource( 6 )
+
+[sub_resource type="SpatialMaterial" id=5]
+metallic = 0.1
+metallic_specular = 0.4
+roughness = 0.1
+normal_enabled = true
+normal_scale = 0.97
+normal_texture = SubResource( 7 )
+
 [node name="MAP" type="Spatial"]
 script = ExtResource( 3 )
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 0, 40, 0 )
+transform = Transform( 0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 0, 26.5579, 0 )
 current = true
-fov = 160.0
 near = 0.04
 far = 112.0
 script = ExtResource( 2 )
@@ -34,7 +54,7 @@ transform = Transform( 0.71934, -0.0484569, -0.692966, 0, 0.997564, -0.0697565, 
 light_color = Color( 0.560784, 0.552941, 0.552941, 1 )
 light_energy = 1.32
 light_indirect_energy = 0.0
-light_specular = 0.26
+light_specular = 0.32
 shadow_enabled = true
 shadow_color = Color( 0.294118, 0.294118, 0.294118, 1 )
 shadow_bias = 0.5
@@ -47,9 +67,9 @@ directional_shadow_max_distance = 10.0
 unique_name_in_owner = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28, 100, 0 )
 light_color = Color( 0.168627, 0.176471, 0.258824, 1 )
-light_energy = 0.74
+light_energy = 0.84
 light_indirect_energy = 0.0
-light_specular = 0.1
+light_specular = 0.2
 shadow_enabled = true
 shadow_color = Color( 0.117647, 0.133333, 0.133333, 1 )
 shadow_bias = 0.5
@@ -71,8 +91,30 @@ radial_segments = 24
 rings = 24
 material = SubResource( 1 )
 
-[node name="MultiMeshInstance" type="MultiMeshInstance" parent="."]
+[node name="WIP" type="Spatial" parent="."]
 visible = false
-use_in_baked_light = true
-lightmap_scale = 1
+
+[node name="MultiMeshInstance" type="MultiMeshInstance" parent="WIP"]
+visible = false
 multimesh = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="WIP"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00794291, -0.325696, -0.00424337 )
+mesh = ExtResource( 6 )
+material/0 = SubResource( 5 )
+
+[node name="MeshInstance2" type="MeshInstance" parent="WIP"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.98828, -0.325696, 1.72681 )
+visible = false
+mesh = ExtResource( 6 )
+material/0 = SubResource( 5 )
+
+[node name="MeshInstance3" type="MeshInstance" parent="WIP"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.98828, -0.325696, 1.72681 )
+visible = false
+mesh = ExtResource( 6 )
+material/0 = SubResource( 5 )
+
+[node name="OmniLight" type="OmniLight" parent="WIP"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.17594, 1.62942, 2.03269 )
+editor_only = true

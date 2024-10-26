@@ -28,9 +28,9 @@ boot_splash/bg_color=Color( 0, 0, 0, 1 )
 
 [display]
 
-window/size/width=960
 window/size/height=480
 window/size/always_on_top=true
+window/stretch/mode="viewport"
 
 [gui]
 

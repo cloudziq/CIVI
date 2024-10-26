@@ -9,7 +9,7 @@ var def_zoom_speed := 30.0
 var def_move_speed := 2.0
 
 var min_h  :=  14.0
-var max_h  :=  40.0
+var max_h  :=  36.0
 var min_a  := -36.0
 var max_a  := -80.0
 var min_f  :=  52.0
@@ -87,7 +87,7 @@ func _process(dt: float) -> void:
 		$"%Sun".directional_shadow_max_distance = lerp(xx, target_sd, .6)
 
 
-	if time_passed > .1:
+	if time_passed > .08:
 		time_passed = 0
 		get_hex_at_mouse()
 
@@ -125,7 +125,7 @@ func _input(event) -> void:
 
 func get_hex_at_mouse():
 	var mouse_pos = get_viewport().get_mouse_position()
-	var from = project_ray_origin(mouse_pos + Vector2(-.25, +.5))
+	var from = project_ray_origin(mouse_pos + Vector2(+.6, 0))
 	var to = from + project_ray_normal(mouse_pos) * 100
 	var hit_position = intersect_ray_with_plane(from, to)
 	var err  := false

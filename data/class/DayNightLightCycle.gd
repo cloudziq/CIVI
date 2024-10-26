@@ -8,13 +8,13 @@ onready var env  := $"../%Env"
 
 
 ## Main settings:
-var day_length   := 40.0    ## in seconds
+var day_length   := 30.0    ## in seconds
 var night_length := 16.0
 
 var sun_min_h  :=   0.0    ## minimalna wysokość słońca (przy wschodzie i zachodzie)
 var sun_max_h  := -35.0    ## maksymalna wysokość słońca (w południe)
 var moon_min_h :=   0.0    ## minimalna wysokość księżyca (przy zachodzie)
-var moon_max_h := -70.0    ## maksymalna wysokość księżyca (noc)
+var moon_max_h := -50.0    ## maksymalna wysokość księżyca (noc)
 
 var start_pos := 220.0     ## początkowa pozycja kątowa ciał niebieskich
 var end_pos   := 20.0      ## końcowa pozycja kątowa ciał niebieskich
@@ -36,6 +36,7 @@ var moon_cycle  := 0.0
 
 func _ready() -> void:
 	moon.light_color  = Color(0,0,0)
+
 
 
 
@@ -76,7 +77,7 @@ func _process(dt: float) -> void:
 
 
 var color_table  = [
-	{"moon_color_0": Color(0, .02, .04),
+	{"moon_color_0": Color(.004, .02, .04),
 	 "moon_color_1": Color(.14, .16, .28),
 	 "moon_color_2": Color(.1, .12, .22)
 	},
@@ -91,28 +92,37 @@ var color_table  = [
 
 
 func aura_control(type:int) -> void:
+	var tween   := get_tree().create_tween().set_parallel(false)
 	var obj     := sun if type == 1 else moon
 	var string  := "sun" if type == 1 else "moon"
+	var a       := 1.0 if type == 1 else .5
 	var length  := day_length if type == 1 else night_length
-	var tween   := get_tree().create_tween().set_parallel(false)
 	var env_    :  Environment  = env.environment
 	var color   :  Color
 	var toffset := 3
 
 	obj.light_color           = color_table[type][string+"_color_0"]
 	env_.ambient_light_color  = color_table[type][string+"_color_0"]
+	env_.fog_color            = color_table[type][string+"_color_0"]
+	env_.ambient_light_energy = .32
 
 	color  = color_table[type][string+"_color_1"]
 	tween.tween_property(obj, "light_color", color, length / toffset * 1.5)
 	tween.parallel().tween_property(env_, "ambient_light_color", color, length / toffset * 1.5)
+	tween.parallel().tween_property(env_, "ambient_light_energy", .5*a, length / toffset * 1.5)
+	tween.parallel().tween_property(env_, "fog_color", color, length / toffset * 1.5)
 
 	color  = color_table[type][string+"_color_2"]
 	tween.tween_property(obj, "light_color", color, length / toffset)
 	tween.parallel().tween_property(env_, "ambient_light_color", color, length / toffset)
+	tween.parallel().tween_property(env_, "ambient_light_energy", .4*a, length / toffset)
+	tween.parallel().tween_property(env_, "fog_color", color, length / toffset)
 
 	color  = color_table[type][string+"_color_0"]
 	tween.tween_property(obj, "light_color", color, length / toffset * .5)
 	tween.parallel().tween_property(env_, "ambient_light_color", color, length / toffset * .5)
+	tween.parallel().tween_property(env_, "ambient_light_energy", .22*a, length / toffset * .5)
+	tween.parallel().tween_property(env_, "fog_color", color, length / toffset * .5)
 
 	tween.tween_property(obj, "light_color", Color(0,0,0), 1)
 	tween.parallel().tween_property(env_, "ambient_light_color",
