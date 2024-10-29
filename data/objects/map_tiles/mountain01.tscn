@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://data/models/map/tile/mountain01.obj" type="ArrayMesh" id=1]
+[ext_resource path="res://terrain_mat.material" type="Material" id=2]
+
+[sub_resource type="CylinderShape" id=2]
+height = 1.0
+radius = 1.65
+
+[node name="StaticBody" type="StaticBody"]
+
+[node name="mountain01" type="MeshInstance" parent="."]
+mesh = ExtResource( 1 )
+skeleton = NodePath("")
+material/0 = ExtResource( 2 )
+
+[node name="collider" type="CollisionShape" parent="."]
+shape = SubResource( 2 )
+
+[node name="OmniLight" type="OmniLight" parent="."]
+transform = Transform( -0.999507, 0, -0.0314106, 0, 1, 0, 0.0314106, 0, -0.999507, 2.0154, 4.07733, 1.23515 )
+shadow_enabled = true
+editor_only = true
+omni_range = 10.0

@@ -21,16 +21,24 @@ _global_script_class_icons={
 [application]
 
 config/name="CIVI"
-run/main_scene="res://data/class/MAP.tscn"
+run/main_scene="res://data/class/SYST.tscn"
+run/delta_smoothing=false
 boot_splash/image="res://logo.png"
 boot_splash/fullsize=false
 boot_splash/bg_color=Color( 0, 0, 0, 1 )
 
+[autoload]
+
+G="*res://data/class/Globals.gd"
+
 [display]
 
-window/size/height=480
+window/size/width=1480
+window/size/height=640
 window/size/always_on_top=true
+window/vsync/use_vsync=false
 window/stretch/mode="viewport"
+window/stretch/aspect="keep"
 
 [gui]
 
