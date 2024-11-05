@@ -8,14 +8,25 @@ height = 1.0
 radius = 1.65
 
 [node name="StaticBody" type="StaticBody"]
-
-[node name="flat01" type="MeshInstance" parent="."]
-mesh = ExtResource( 1 )
-skeleton = NodePath("")
-material/0 = ExtResource( 2 )
+collision_mask = 0
 
 [node name="collider" type="CollisionShape" parent="."]
 shape = SubResource( 2 )
+
+[node name="LOD" type="LOD" parent="."]
+lod_range = 0.0
+
+[node name="main" type="MeshInstance" parent="LOD"]
+lod_range = 12.0
+material_override = ExtResource( 2 )
+mesh = ExtResource( 1 )
+skeleton = NodePath("")
+
+[node name="lod1" type="MeshInstance" parent="LOD"]
+visible = false
+material_override = ExtResource( 2 )
+mesh = ExtResource( 1 )
+skeleton = NodePath("")
 
 [node name="OmniLight" type="OmniLight" parent="."]
 transform = Transform( -0.999507, 0, -0.0314106, 0, 1, 0, 0.0314106, 0, -0.999507, 1.32215, 2.30868, 0.614682 )

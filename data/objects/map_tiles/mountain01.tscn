@@ -1,21 +1,42 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://data/models/map/tile/mountain01.obj" type="ArrayMesh" id=1]
 [ext_resource path="res://terrain_mat.material" type="Material" id=2]
+[ext_resource path="res://data/models/map/tile/mountain01-lod1.obj" type="ArrayMesh" id=3]
+[ext_resource path="res://data/models/map/tile/mountain01-lod2.obj" type="ArrayMesh" id=4]
 
 [sub_resource type="CylinderShape" id=2]
 height = 1.0
 radius = 1.65
 
 [node name="StaticBody" type="StaticBody"]
-
-[node name="mountain01" type="MeshInstance" parent="."]
-mesh = ExtResource( 1 )
-skeleton = NodePath("")
-material/0 = ExtResource( 2 )
+collision_mask = 0
 
 [node name="collider" type="CollisionShape" parent="."]
 shape = SubResource( 2 )
+
+[node name="LOD" type="LOD" parent="."]
+lod_range = 0.0
+lod_priority = 1
+
+[node name="main" type="MeshInstance" parent="LOD"]
+lod_range = 30.0
+material_override = ExtResource( 2 )
+mesh = ExtResource( 1 )
+skeleton = NodePath("")
+
+[node name="lod1" type="MeshInstance" parent="LOD"]
+visible = false
+lod_range = 25.0
+material_override = ExtResource( 2 )
+mesh = ExtResource( 3 )
+skeleton = NodePath("")
+
+[node name="lod2" type="MeshInstance" parent="LOD"]
+visible = false
+material_override = ExtResource( 2 )
+mesh = ExtResource( 4 )
+skeleton = NodePath("")
 
 [node name="OmniLight" type="OmniLight" parent="."]
 transform = Transform( -0.999507, 0, -0.0314106, 0, 1, 0, 0.0314106, 0, -0.999507, 2.0154, 4.07733, 1.23515 )

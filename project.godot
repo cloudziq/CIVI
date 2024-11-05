@@ -13,9 +13,15 @@ _global_script_classes=[ {
 "class": "DayNightLightCycle",
 "language": "GDScript",
 "path": "res://data/class/DayNightLightCycle.gd"
+}, {
+"base": "Spatial",
+"class": "editor",
+"language": "GDScript",
+"path": "res://data/class/editor.gd"
 } ]
 _global_script_class_icons={
-"DayNightLightCycle": ""
+"DayNightLightCycle": "",
+"editor": ""
 }
 
 [application]
@@ -26,6 +32,7 @@ run/delta_smoothing=false
 boot_splash/image="res://logo.png"
 boot_splash/fullsize=false
 boot_splash/bg_color=Color( 0, 0, 0, 1 )
+config/icon="res://logo.png"
 
 [autoload]
 
@@ -128,18 +135,29 @@ move_R={
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":68,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
  ]
 }
+key1={
+"deadzone": 0.5,
+"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":1,"canceled":false,"pressed":false,"doubleclick":false,"script":null)
+ ]
+}
+key2={
+"deadzone": 0.5,
+"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":2,"canceled":false,"pressed":false,"doubleclick":false,"script":null)
+ ]
+}
+
+[memory]
+
+limits/command_queue/multithreading_queue_size_kb=512
 
 [physics]
 
-common/physics_fps=30
 3d/active_soft_world=false
 3d/default_gravity=0.0
 
 [rendering]
 
 quality/driver/driver_name="GLES2"
-quality/directional_shadow/size.mobile=4096
 quality/filters/anisotropic_filter_level=1
-batching/lights/scissor_area_threshold=0.45
 environment/default_clear_color=Color( 0.439216, 0.439216, 0.439216, 1 )
 environment/default_environment="res://def_env.tres"

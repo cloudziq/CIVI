@@ -2,5 +2,7 @@
 
 [ext_resource path="res://data/class/SYST.gd" type="Script" id=1]
 
-[node name="SYST" type="Node2D"]
+[node name="SYST" type="Spatial"]
 script = ExtResource( 1 )
+rec_screen = true
+dev_screen = false

@@ -1,37 +1,39 @@
 extends Camera
 
 
-var map_data : Array
+var map_data :  Array
+var raycast  := RayCast.new()
 
 
-var def_zoom_speed := 8.2
+
+
+onready var highlight := $"../%Highlight"
+
+var def_zoom_speed := 6.2
 var def_move_speed := 1.8
 
-var min_h  :=  11.0
-var max_h  :=  28.0
+var min_h  :=  10.0
+var max_h  :=  22.0
 var min_a  := -32.0
-var max_a  := -66.0
+var max_a  := -62.0
 var min_f  :=  52.0
 var max_f  :=  84.0
-var min_d  :=  0.06
-var max_d  :=  0.00
+var min_d  :=  0.08
+var max_d  :=  0.04
 var min_sd :=  50
 var max_sd :=  100
-
-
-var curr_hex_index := 0
-var prev_hex_index := 0
-var curr_multimesh :  MultiMesh
-var prev_multimesh :  MultiMesh
 
 var hex_radius     := 2
 
 
 ##  Holders:
+var hex            :  StaticBody
+var hex_pos        :  Vector3
 var xx             := 0.0
 var move_speed_add := 0.0
 var zoom_speed     := 0.0
 var move_vector    := Vector3()
+var highlight_targ := Vector3()
 var target_tilt    := 0.0
 var target_fov     := 0.0
 var target_dof     := 0.0
@@ -45,6 +47,11 @@ var frame_count    := 0
 
 
 func _ready() -> void:
+	global_transform.origin.y  = min_h + (max_h - min_h) *.5
+	rotation_degrees.x         = min_a + (max_a - min_a) *.5
+
+	raycast.enabled  = true
+	add_child(raycast)
 	cam_mod()
 
 
@@ -57,19 +64,19 @@ func _process(dt: float) -> void:
 
 	#  Zoom:
 	if zoom_speed != 0:
-		global_transform.origin.y  = clamp(global_transform.origin.y + zoom_speed *dt,min_h,max_h)
+		global_transform.origin.y  = clamp(global_transform.origin.y +zoom_speed *dt, min_h,max_h)
 		zoom_speed                 = lerp(zoom_speed, 0.0, .22)
 		cam_mod()
 
 	#  Move:
 	if move_vector != Vector3():
-		var vector  = transform.basis.x * move_vector.x + transform.basis.z * move_vector.z
+		var vector  = transform.basis.x *move_vector.x +transform.basis.z *move_vector.z
 		vector.y    = 0
-		global_transform.origin += vector.normalized() * move_vector.length() * dt
+		global_transform.origin += vector.normalized() *move_vector.length() *dt
 
 	#  Tilt:
 	if rotation_degrees.x != target_tilt:
-		rotation_degrees.x = lerp(rotation_degrees.x, target_tilt, 0.06)
+		rotation_degrees.x = lerp(rotation_degrees.x, target_tilt, .1)
 
 	#  FOV:
 	if fov != target_fov:
@@ -85,10 +92,14 @@ func _process(dt: float) -> void:
 	if xx != target_sd:
 		$"%Sun".directional_shadow_max_distance = lerp(xx, target_sd, .6)
 
+	#  Highlight:
+	if highlight.position != highlight_targ:
+		highlight.position  = lerp(highlight.position, highlight_targ, .42)
 
-#	if time_passed > .08:
-#		time_passed = 0
-#		get_hex_at_mouse()
+
+	if time_passed > .01:
+		time_passed = 0
+		get_hex_at_mouse()
 
 
 
@@ -122,63 +133,17 @@ func _input(event) -> void:
 
 
 
-#func get_hex_at_mouse():
-#	var mouse_pos = get_viewport().get_mouse_position()
-#	var from = project_ray_origin(mouse_pos)
-#	var to = from + project_ray_normal(mouse_pos) * 100
-#	var hit_position = intersect_ray_with_plane(from, to)
-#	var err  := false
-#
-#	if hit_position:
-#		var coord = world_to_hex(hit_position)
-#
-#		if coord.x < 0 or coord.x > map_data[0].size()-1: err = true
-#		if coord.y < 0 or coord.y > map_data[1].size()-1: err = true
+func get_hex_at_mouse():
+	var mouse_pos    = get_viewport().get_mouse_position()
+	var origin       = project_ray_origin(mouse_pos) + Vector3(0,.4,0)
+	var direction    = project_ray_normal(mouse_pos)
+	var space_state  = get_world().direct_space_state
+	var ray_test     = space_state.intersect_ray(origin, origin + direction * 82)
 
-#		if not err:
-#			var hex_type    = map_data[coord.x][coord.y]["type"]
-#			curr_hex_index  = map_data[coord.x][coord.y]["id"]
-#			curr_multimesh  = vis_data[hex_type].multimesh
-#
-#			if curr_hex_index != prev_hex_index or curr_multimesh != prev_multimesh:
-#				curr_multimesh.set_instance_color(curr_hex_index, Color(.4, .6, 2))
-#				prev_multimesh.set_instance_color(prev_hex_index, Color(1,1,1))
-#				prev_hex_index  = curr_hex_index
-#				prev_multimesh  = curr_multimesh
-#
-
-#		if not err:
-#			var hex_type    = map_data[coord.x][coord.y]["type"]
-#			curr_hex_index  = map_data[coord.x][coord.y]["id"]
-#			curr_multimesh  = vis_data[hex_type].multimesh
-#
-#			# Oblicz współrzędne chunka
-#			var chunk_q = int(floor(coord.x / chunk_size))
-#			var chunk_r = int(floor(coord.y / chunk_size))
-#			var chunk_coord = Vector2(chunk_q, chunk_r)
-#
-#			print("Chunk:", chunk_coord)
-#			print("Hex w chunku:", Vector2(coord.x % chunk_size, coord.y % chunk_size))
-#
-#			if curr_hex_index != prev_hex_index or curr_multimesh != prev_multimesh:
-#				curr_multimesh.set_instance_color(curr_hex_index, Color(.4, .6, 2))
-#				prev_multimesh.set_instance_color(prev_hex_index, Color(1,1,1))
-#				prev_hex_index  = curr_hex_index
-#				prev_multimesh  = curr_multimesh
-
-
-
-
-
-
-func intersect_ray_with_plane(from, to):
-	var plane = Plane(Vector3(+.006, 1, -.006), 0)
-	var hit_position = plane.intersects_segment(from, to)
-
-	if hit_position != null:
-		if plane.has_point(hit_position):
-			return hit_position
-	return null
+	if ray_test:
+		hex  = ray_test.collider
+		hex_pos  = hex.position
+		highlight_targ  = hex_pos -Vector3(0, -.12, 0)
 
 
 
@@ -186,28 +151,28 @@ func intersect_ray_with_plane(from, to):
 
 
 func world_to_hex(pos: Vector3) -> Vector2:
-	var q = pos.x / (hex_radius * 3 * .5)
-	var r = (pos.z - (q * hex_radius * sqrt(3) * .5)) / (hex_radius * sqrt(3))
+	var q = pos.x / (hex_radius *3 *.5)
+	var r = (pos.z - (q *hex_radius *sqrt(3) *.5)) / (hex_radius *sqrt(3))
 
 	var rounded_x = round(q)
 	var rounded_y = round(r)
 
-	return Vector2(rounded_y, rounded_x)
+	return Vector2(rounded_x, rounded_y)
 
 
 
 
 
-func cam_mod(move := 0.0) -> void:
-	var ratio      := (global_transform.origin.y - min_h) / (max_h - min_h)
-	zoom_speed      = clamp(zoom_speed + move, -def_zoom_speed, def_zoom_speed)
+
+func cam_mod(move  := 0.0) -> void:
+	var ratio      := (global_transform.origin.y -min_h) /(max_h -min_h)
+	zoom_speed      = clamp(zoom_speed +move, -def_zoom_speed, def_zoom_speed)
 	move_speed_add  = def_move_speed * (1 + ratio * 32)
 
 	target_tilt  = lerp(min_a,  max_a,  ratio)
 	target_fov   = lerp(min_f,  max_f,  ratio)
 	target_dof   = lerp(min_d,  max_d,  ratio)
 	target_sd    = lerp(min_sd, max_sd, ratio)
-
 
 
 

@@ -2,62 +2,68 @@ extends     Node
 class_name  DayNightLightCycle
 
 
-onready var sun  : DirectionalLight = $"../%Sun"
-onready var moon : DirectionalLight = $"../%Moon"
-onready var env  : WorldEnvironment = $"../%Env"
+onready var sun    : DirectionalLight = $"../%Sun"
+onready var moon   : DirectionalLight = $"../%Moon"
+onready var env    : WorldEnvironment = $"../%Env"
+onready var env_   : Environment      = env.environment
+onready var t_env  : SceneTreeTween
+onready var angle  : float            = $"../%Cam".rotation_degrees.y
 
 
 ## Main settings:
-var day_length   := 16.0    ## in seconds
-var night_length := 12.0
+var phases_amount := 3      ## phases amount
+var day_length    := 16.0   ## in seconds
+var night_length  := 10.0
 
-var sun_min_h  := -1
-var sun_max_h  := -30.0
-var moon_min_h := -1
-var moon_max_h := -40.0
+var sun_min_h  :=  0
+var sun_max_h  := -44.0
+var moon_min_h :=  0
+var moon_max_h := -32.0
 var rot_dir    := -1
 
-var start_pos      := 80.0
-var end_pos        := 280.0
-var disc_start_pos := 40.0
-var disc_end_pos   := disc_start_pos + 360
+onready var start_pos    :=  angle -90.0
+onready var end_pos      :=  angle +start_pos +90
+onready var bg_start_pos :=  start_pos +120.0
 
-var moon_start_offset  = day_length - (night_length * .14)
-var sun_start_offset   = night_length - (day_length * .16)
+var moon_start_offset := (day_length -(night_length *.12)) -1 -day_length   *.02
+var sun_start_offset  := (night_length -(day_length *.14)) -1 -night_length *.02
 
 var sun_vis    := true
 var moon_vis   := false
 
 
+
 ## Holders:
-var sun_p       := 0.0
-var moon_p      := 0.0
-var disc_p      := 0.0
-var sun_cycle   := 0.0
-var moon_cycle  := 0.0
-var disc_cycle  := 0.0
+var sun_p      := 0.0
+var moon_p     := 0.0
+var bg_p       := 0.0
+var sun_cycle  := 0.0
+var moon_cycle := 0.0
+var bg_cycle   := 0.0
+var col_       : Color
+var str_       : float
+var sat_       : float
+var phase_time : float
 
 
-var color_table := {
-	"moon": {
-		"disc": [
-			Color(.04, .05, .07),
-			Color(.12, .18, .32),
-			Color(.16, .22, .46)
+var param_table := {
+	"day": {
+		"color": [
+			Color(.62, .56, .44),
+			Color(.58, .54, .48),
+			Color(.24, .12, .16)
 		],
-		"bg": [
-			.32, .4, .22
-		]
+		"bg_strength": [1.2, 1.8, 1.1],
+		"saturation":  [1.3, 1.6, 1.1]
 	},
-	"sun": {
-		"disc": [
-			Color(.44, .22, .28),
-			Color(.82, .76, .68),
-			Color(.58, .54, .48)
+	"night": {
+		"color": [
+			Color(.14, .16, .24),
+			Color(.16, .24, .32),
+			Color(.12, .18, .26)
 		],
-		"bg": [
-			.6, 1.2, 1.6
-		]
+		"bg_strength": [.4, .3, .82],
+		"saturation":  [.9, .82, .92]
 	}
 }
 
@@ -66,27 +72,30 @@ var color_table := {
 
 
 
+
 func _ready() -> void:
-	moon.light_color  = Color(0,0,0)
+#	moon.light_color  = Color(0,0,0)
+	moon.visible  = false
 
 
 
 
 
 func _process(dt: float) -> void:
-		var env_ : Environment = env.environment
-		var disc_angle := 0.0
+		var bg_angle := 0.0
 
-		disc_cycle += dt
-		if disc_cycle < sun_start_offset + moon_start_offset:
-			disc_p      = disc_cycle / (sun_start_offset + moon_start_offset)
-			disc_angle  = lerp(disc_start_pos, disc_end_pos, disc_p)
-			env_.background_sky_rotation_degrees.y  = disc_angle
+		bg_cycle += dt
+		if bg_cycle <sun_start_offset +moon_start_offset:
+			var bg_end_pos := bg_start_pos +360
+			bg_p      = bg_cycle / (sun_start_offset +moon_start_offset)
+			bg_angle  = lerp(bg_start_pos, bg_end_pos, bg_p)
+			env_.background_sky_rotation_degrees.y  = bg_angle
 		else:
-			disc_cycle  = 0
+			bg_cycle  = 0
+
 
 		if sun_vis:
-			if sun_cycle == 0: aura_control("sun")
+			if sun_cycle == 0: aura_init("day")
 			sun_cycle += dt
 
 			if sun_cycle < day_length:
@@ -94,18 +103,18 @@ func _process(dt: float) -> void:
 				if sun_cycle > moon_start_offset:
 					moon_vis  = true
 
-
 				var current_dist      = lerp(start_pos, end_pos, sun_p) * rot_dir
 				var angle_x: float    = lerp(sun_min_h, sun_max_h, sin(sun_p * PI))
 				sun.rotation_degrees  = Vector3(angle_x, current_dist, 0)
-
 			else:
 				sun_cycle  = 0
 				sun_vis  = false
 
+
 		if moon_vis:
-			if moon_cycle == 0: aura_control("moon")
+			if moon_cycle == 0: aura_init("night")
 			moon_cycle += dt
+
 			if moon_cycle < night_length:
 				moon_p    = moon_cycle / night_length
 				if moon_cycle > sun_start_offset:
@@ -123,46 +132,36 @@ func _process(dt: float) -> void:
 
 
 
-func aura_control(type: String) -> void:
-	var tween    := get_tree().create_tween().set_parallel(false)
-	var obj      := sun if type == "sun" else moon
-	var length   := day_length if type == "sun" else night_length
-	var env_     :  Environment  = env.environment
-	var color    :  Color
-	var strength :  float
-	var p        := 3  ## phases amount
-	var a        := .8 if type == "sun" else 5.2  ## fog color strength modifier
+func aura_init(type: String) -> void:
+	phase_time  = day_length /phases_amount if type == "day" else night_length /phases_amount
+	phase_run(type, phase_time)
 
 
-	# phase 1:
-	color     = color_table[type]["disc"][1]
-	strength  = color_table[type]["bg"][1]
-	tween.tween_property(obj, "light_color", color, length /p *1.5)
-	tween.parallel().tween_property(env_, "ambient_light_color", color, length /p *1.5)
-	tween.parallel().tween_property(env_, "ambient_light_energy", strength *.6 *a, length /p *1.5)
-	tween.parallel().tween_property(env_, "background_energy", strength, length /p *1.5)
-	tween.parallel().tween_property(env_, "fog_color", color *strength *a, length /p *1.5)
 
 
-	# phase 2:
-	color  = color_table[type]["disc"][2]
-	strength  = color_table[type]["bg"][2]
-	tween.tween_property(obj, "light_color", color, length /p)
-	tween.parallel().tween_property(env_, "ambient_light_color", color, length /p)
-	tween.parallel().tween_property(env_, "ambient_light_energy", strength *.6 *a, length /p)
-	tween.parallel().tween_property(env_, "background_energy", strength, length /p)
-	tween.parallel().tween_property(env_, "fog_color", color *strength *a, length /p)
 
 
-	# phase 3:
-	color  = color_table[type]["disc"][0]
-	strength  = color_table[type]["bg"][0]
-	tween.tween_property(obj, "light_color", color, length /p *.5)
-	tween.parallel().tween_property(env_, "ambient_light_color", color, length /p * .5)
-	tween.parallel().tween_property(env_, "ambient_light_energy", strength *.6 *a, length /p*.5)
-	tween.parallel().tween_property(env_, "background_energy", strength, length /p *.5)
-	tween.parallel().tween_property(env_, "fog_color", color *strength *a, length /p *.5)
+func phase_run(type:String, time:float, phase:=0) -> void:
+	var obj   := sun if type == "day" else moon
+	var a     := .6 if type == "day" else 1.8  ## fog & ambient strength modifier
 
+	if phase == 0:
+		obj.visible  = true
+		t_env  = get_tree().create_tween().set_parallel(false)
 
-	# cycle end:
-	tween.tween_property(obj, "light_color", Color(0,0,0), 1.4)
+	if phase < phases_amount:
+		col_  = param_table[type]["color"][phase]
+		str_  = param_table[type]["bg_strength"][phase]
+		sat_  = param_table[type]["saturation"][phase]
+
+		t_env.tween_property(obj, "light_color", col_, time)
+		t_env.parallel().tween_property(env_, "ambient_light_color", col_ *1.1, time)
+		t_env.parallel().tween_property(env_, "ambient_light_energy", a *2.2, time)
+		t_env.parallel().tween_property(env_, "fog_color", col_ *str_ *a, time)
+		t_env.parallel().tween_property(env_, "background_energy", str_, time)
+		t_env.parallel().tween_property(env_, "adjustment_saturation", sat_, time)
+
+		phase_run(type, time, phase +1)
+	else:
+		t_env.tween_property(obj, "light_color", Color(0,0,0), 1.2)
+		t_env.tween_property(obj, "visible", false, 0)

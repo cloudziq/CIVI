@@ -2,7 +2,7 @@
 # v0.1^-gamma
 
 
-extends Node2D
+extends Spatial
 
 
 export var rec_screen  := false
@@ -29,7 +29,7 @@ func window_prepare() -> void:
 	var window_size  = G.window
 
 	if rec_screen:
-		window_size *= Vector2(.436, .436)
+		window_size *= Vector2(.52, .52)
 	elif dev_screen:
 		window_size *= Vector2(.65, .65)
 	else:
