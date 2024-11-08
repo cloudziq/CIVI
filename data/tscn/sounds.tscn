@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://data/sounds/1.wav" type="AudioStream" id=1]
+
+[node name="sounds" type="Spatial"]
+
+[node name="tile_place" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 1 )
+volume_db = -6.0
+bus = "sfx"

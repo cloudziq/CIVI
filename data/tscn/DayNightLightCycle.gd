@@ -23,7 +23,7 @@ var rot_dir    := -1
 
 onready var start_pos    :=  angle -90.0
 onready var end_pos      :=  angle +start_pos +90
-onready var bg_start_pos :=  start_pos +120.0
+onready var bg_start_pos :=  start_pos +160.0
 
 var moon_start_offset := (day_length -(night_length *.12)) -1 -day_length   *.02
 var sun_start_offset  := (night_length -(day_length *.14)) -1 -night_length *.02
@@ -34,9 +34,9 @@ var moon_vis   := false
 
 
 ## Holders:
-var sun_p      := 0.0
-var moon_p     := 0.0
-var bg_p       := 0.0
+var sun_p      := 0.0    ##  progress (0 to 1)
+var moon_p     := 0.0    ## -||-
+var bg_p       := 0.0    ## -||-
 var sun_cycle  := 0.0
 var moon_cycle := 0.0
 var bg_cycle   := 0.0
@@ -142,7 +142,7 @@ func aura_init(type: String) -> void:
 
 func phase_run(type:String, time:float, phase:=0) -> void:
 	var obj   := sun if type == "day" else moon
-	var a     := 1.2 if type == "day" else 1.8  ## fog & ambient strength modifier
+	var a     := 1.6 if type == "day" else 2.0  ## fog & ambient strength modifier
 
 	if phase == 0:
 		obj.visible  = true

@@ -3,17 +3,19 @@ extends Spatial
 
 onready var cam := $"%Cam"
 
+var LightCycle : DayNightLightCycle
 var map_radius := 40
 var hex_radius := 2
+var hex_height : float
 var noise      :  OpenSimplexNoise
 
 var map_data       := {}
 
 var tiles_def := {
-	"flat01":     preload("res://data/objects/map_tiles/flat01.tscn"),
-	"hill01":     preload("res://data/objects/map_tiles/hill01.tscn"),
-	"mountain01": preload("res://data/objects/map_tiles/mountain01.tscn"),
-	"water01":    preload("res://data/objects/map_tiles/water01.tscn")
+	"flat":     preload("res://data/objects/map_tiles/flat01.tscn"),
+	"hill":     preload("res://data/objects/map_tiles/hill01.tscn"),
+	"mountain": preload("res://data/objects/map_tiles/mountain01.tscn"),
+	"water":    preload("res://data/objects/map_tiles/water01.tscn")
 }
 
 
@@ -23,7 +25,7 @@ var tiles_def := {
 
 func _ready() -> void:
 	randomize()
-	var LightCycle    := DayNightLightCycle.new()
+	LightCycle  = DayNightLightCycle.new()
 
 	map_gen()
 	add_child(LightCycle)
@@ -38,14 +40,15 @@ func map_gen() -> void:
 #	var data : Dictionary
 	var instance  :  StaticBody
 	var transform :  Transform
-	var scale     := map_radius * .006
+	var scale     := map_radius * .01
 
 	noise  = OpenSimplexNoise.new()
 	noise.seed         = randi()
-	noise.octaves      = int(rand_range(2, 3))
+	noise.octaves      = int(rand_range(3, 4))
 	noise.period       = rand_range(2.8, 4.2)
 	noise.persistence  = rand_range(.6, 1)
-	noise.lacunarity   = rand_range(2, 3)
+	noise.lacunarity   = rand_range(.6, 4)
+
 
 	for q in range(-map_radius, map_radius + 1):
 		for r in range(-map_radius, map_radius + 1):
@@ -64,16 +67,16 @@ func map_gen() -> void:
 
 
 				if noise_value >.5 and randf() <.40:
-					instance  = tiles_def["mountain01"].instance()
+					instance  = tiles_def["mountain"].instance()
 
 				elif noise_value >.24 and randf() <.6:
-					instance  = tiles_def["hill01"].instance()
+					instance  = tiles_def["hill"].instance()
 
 				elif noise_value >.12:
-					instance  = tiles_def["flat01"].instance()
+					instance  = tiles_def["flat"].instance()
 
 				else:
-					instance  = tiles_def["water01"].instance()
+					instance  = tiles_def["water"].instance()
 					transform.origin.y -=  .1
 #				hex_map_data[Vector2(q, r)] = data
 
@@ -86,21 +89,44 @@ func map_gen() -> void:
 
 
 
-func add_tile(type:String, pos:Vector3) -> void:
+func add_tile(type:String, corr:=0.0) -> void:
+	var tween           :  SceneTreeTween
 	var instance        :  StaticBody
 	var transform       := Transform()
 	var random_rotation  = deg2rad(randi() %6 *60)
 
 	match type:
-		"flat": instance = tiles_def["flat01"].instance()
-		"hill": instance = tiles_def["hill01"].instance()
+		"flat":
+			hex_height = 1
+			instance = tiles_def[type].instance()
+		"hill":
+			hex_height =  rand_range(1.1, 1.2)
+			instance = tiles_def[type].instance()
+		"mountain":
+			hex_height =  rand_range(1.32, 1.46)
+			instance = tiles_def[type].instance()
+
 
 	transform.basis      = Basis(Vector3(0, 1, 0), random_rotation)
-	transform.origin     = pos
+	transform.origin     = cam.hex_pos
+	if corr != 0:
+		transform.origin += Vector3(0, corr, 0)
+
+	instance.scale       = Vector3(0,0,0)
 	instance.transform   = transform
 	cam.hex              = instance
 	add_child(instance)
 
+	var scale  = Vector3(1, 1, 1)
+	scale.y *= 1.6
+
+	if tween:
+		tween.stop()
+#		yield(get_tree().create_timer(0.02), "timeout")
+	tween  = get_tree().create_tween().set_trans(Tween.TRANS_SINE)
+	tween.tween_property(instance, "scale", scale *1.22, .28)
+	tween.tween_property(instance, "scale", Vector3(1, hex_height ,1), 1.26)
+	tween.play()
 
 
 

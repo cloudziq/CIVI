@@ -85,7 +85,7 @@ func _process(dt: float) -> void:
 	#  DOF:
 	xx  = $"%Env".environment.dof_blur_far_amount
 	if xx != target_dof:
-		$"%Env".environment.dof_blur_far_amount = lerp(xx, target_dof, 0.01)
+		$"%Env".environment.dof_blur_far_amount = lerp(xx, target_dof, 0.02)
 
 	#  Shadow Distance:
 	xx  = $"%Sun".directional_shadow_max_distance
@@ -94,7 +94,7 @@ func _process(dt: float) -> void:
 
 	#  Highlight:
 	if highlight.position != highlight_targ:
-		highlight.position  = lerp(highlight.position, highlight_targ, .42)
+		highlight.position  = lerp(highlight.position, highlight_targ, .52)
 
 
 	if time_passed > .01:
@@ -143,7 +143,7 @@ func get_hex_at_mouse():
 	if ray_test:
 		hex  = ray_test.collider
 		hex_pos  = hex.position
-		highlight_targ  = hex_pos
+		highlight_targ  = hex_pos + Vector3(0, .6, 0)
 
 
 
