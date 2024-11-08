@@ -19,7 +19,7 @@ lod_range = 0.0
 lod_priority = 1
 
 [node name="main" type="MeshInstance" parent="LOD"]
-lod_range = 30.0
+lod_range = 80.0
 material_override = ExtResource( 2 )
 mesh = ExtResource( 1 )
 skeleton = NodePath("")

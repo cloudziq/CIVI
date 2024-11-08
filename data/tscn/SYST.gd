@@ -17,7 +17,7 @@ func _ready() -> void:
 	randomize()
 #	G.load_config()
 	window_prepare()
-	add_child(preload("res://data/class/MAP.tscn").instance())
+	add_child(preload("res://data/tscn/MAP.tscn").instance())
 
 
 

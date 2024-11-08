@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://data/tscn/EDITOR.gd" type="Script" id=1]
+[ext_resource path="res://data/tscn/particles/particles-editor.tscn" type="PackedScene" id=2]
+
+[node name="Spatial" type="Spatial"]
+process_priority = -1
+script = ExtResource( 1 )
+PARTICLES = ExtResource( 2 )

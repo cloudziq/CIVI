@@ -11,14 +11,14 @@ onready var angle  : float            = $"../%Cam".rotation_degrees.y
 
 
 ## Main settings:
-var phases_amount := 3      ## phases amount
-var day_length    := 16.0   ## in seconds
-var night_length  := 10.0
+var day_length    := 18.0   ## in seconds
+var night_length  := 14.0
+var phases_amount := 3      ## phases amount (see param_table)
 
 var sun_min_h  :=  0
-var sun_max_h  := -44.0
+var sun_max_h  := -36.0
 var moon_min_h :=  0
-var moon_max_h := -32.0
+var moon_max_h := -25.0
 var rot_dir    := -1
 
 onready var start_pos    :=  angle -90.0
@@ -53,7 +53,7 @@ var param_table := {
 			Color(.58, .54, .48),
 			Color(.24, .12, .16)
 		],
-		"bg_strength": [1.2, 1.8, 1.1],
+		"bg_strength": [.96, 1.1, .8],
 		"saturation":  [1.3, 1.6, 1.1]
 	},
 	"night": {
@@ -62,7 +62,7 @@ var param_table := {
 			Color(.16, .24, .32),
 			Color(.12, .18, .26)
 		],
-		"bg_strength": [.4, .3, .82],
+		"bg_strength": [.5, .1, 1.1],
 		"saturation":  [.9, .82, .92]
 	}
 }
@@ -74,7 +74,6 @@ var param_table := {
 
 
 func _ready() -> void:
-#	moon.light_color  = Color(0,0,0)
 	moon.visible  = false
 
 
@@ -143,7 +142,7 @@ func aura_init(type: String) -> void:
 
 func phase_run(type:String, time:float, phase:=0) -> void:
 	var obj   := sun if type == "day" else moon
-	var a     := .6 if type == "day" else 1.8  ## fog & ambient strength modifier
+	var a     := 1.2 if type == "day" else 1.8  ## fog & ambient strength modifier
 
 	if phase == 0:
 		obj.visible  = true
@@ -163,5 +162,5 @@ func phase_run(type:String, time:float, phase:=0) -> void:
 
 		phase_run(type, time, phase +1)
 	else:
-		t_env.tween_property(obj, "light_color", Color(0,0,0), 1.2)
+		t_env.tween_property(obj, "light_color", Color(0,0,0), 1.25)
 		t_env.tween_property(obj, "visible", false, 0)

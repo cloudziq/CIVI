@@ -143,7 +143,7 @@ func get_hex_at_mouse():
 	if ray_test:
 		hex  = ray_test.collider
 		hex_pos  = hex.position
-		highlight_targ  = hex_pos -Vector3(0, -.12, 0)
+		highlight_targ  = hex_pos
 
 
 

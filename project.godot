@@ -12,12 +12,12 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "DayNightLightCycle",
 "language": "GDScript",
-"path": "res://data/class/DayNightLightCycle.gd"
+"path": "res://data/tscn/DayNightLightCycle.gd"
 }, {
 "base": "Spatial",
 "class": "editor",
 "language": "GDScript",
-"path": "res://data/class/editor.gd"
+"path": "res://data/tscn/EDITOR.gd"
 } ]
 _global_script_class_icons={
 "DayNightLightCycle": "",
@@ -27,7 +27,7 @@ _global_script_class_icons={
 [application]
 
 config/name="CIVI"
-run/main_scene="res://data/class/SYST.tscn"
+run/main_scene="res://data/tscn/SYST.tscn"
 run/delta_smoothing=false
 boot_splash/image="res://logo.png"
 boot_splash/fullsize=false
@@ -36,7 +36,7 @@ config/icon="res://logo.png"
 
 [autoload]
 
-G="*res://data/class/Globals.gd"
+G="*res://data/tscn/GLOBAL_DATA.gd"
 
 [display]
 
@@ -143,6 +143,11 @@ key1={
 key2={
 "deadzone": 0.5,
 "events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":2,"canceled":false,"pressed":false,"doubleclick":false,"script":null)
+ ]
+}
+map_regenerate={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777255,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
  ]
 }
 
