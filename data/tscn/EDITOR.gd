@@ -5,8 +5,6 @@ class_name  editor
 export var PARTICLES : PackedScene
 export var SOUNDS    : PackedScene
 
-var sounds : Spatial
-
 onready var map  : Spatial  = get_parent()
 onready var cam  : Camera   = $"../%Cam"
 
@@ -14,7 +12,8 @@ var def_emit_str := .8
 
 
 ## Holders:
-var s_tile_place  : AudioStreamPlayer
+var s_tile_place : AudioStreamPlayer
+var s_map_regen  : AudioStreamPlayer
 
 
 
@@ -22,9 +21,10 @@ var s_tile_place  : AudioStreamPlayer
 
 
 func _ready() -> void:
-	sounds  = SOUNDS.instance()
-	add_child(sounds)
+	var sounds    = SOUNDS.instance()
 	s_tile_place  = sounds.get_node("tile_place")
+	s_map_regen   = sounds.get_node("map_regenerate")
+	add_child(sounds)
 
 
 
@@ -51,16 +51,25 @@ func _input(event: InputEvent) -> void:
 			while type == "water":
 				type  = keys[randi() % keys.size()-1]
 
-			add_child(particles)
 			corr  = .1 if cam.hex.position.y < 0.0 else 0.0
 
 			s_tile_place.pitch_scale  = rand_range(1.6, 4.6)
 			s_tile_place.playing  = true
 
-			cam.hex.queue_free()
-			map.add_tile(type, corr)
+			map.hex_prepare(Vector2(0,0), type, corr)
+			add_child(particles)
+
 
 	elif event.is_action_pressed("map_regenerate"):
-		get_tree().call_group("hex", "queue_free")
-		map.map_gen()
+		for i in get_tree().get_nodes_in_group("hex"):
+			i.call_deferred("queue_free")
+		yield(get_tree(), "idle_frame")
+		map.generate_noise_map()
 
+
+
+
+
+func _on_map_ready() -> void:
+	s_map_regen.pitch_scale  = rand_range(.7, .9)
+	s_map_regen.playing  = true

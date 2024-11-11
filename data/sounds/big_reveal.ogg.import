@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/big_reveal.ogg-e4e8403690eb10022a4672acfabc7983.oggstr"
+
+[deps]
+
+source_file="res://data/sounds/big_reveal.ogg"
+dest_files=[ "res://.import/big_reveal.ogg-e4e8403690eb10022a4672acfabc7983.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

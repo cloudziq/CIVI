@@ -142,7 +142,7 @@ func aura_init(type: String) -> void:
 
 func phase_run(type:String, time:float, phase:=0) -> void:
 	var obj   := sun if type == "day" else moon
-	var a     := 1.6 if type == "day" else 2.0  ## fog & ambient strength modifier
+	var a     := 3.2 if type == "day" else 6.2  ## fog & ambient strength modifier
 
 	if phase == 0:
 		obj.visible  = true
