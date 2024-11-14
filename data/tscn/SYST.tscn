@@ -4,5 +4,3 @@
 
 [node name="SYST" type="Spatial"]
 script = ExtResource( 1 )
-rec_screen = true
-dev_screen = false

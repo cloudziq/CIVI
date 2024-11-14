@@ -4,20 +4,15 @@
 [ext_resource path="res://terrain_mat.material" type="Material" id=2]
 [ext_resource path="res://data/models/map/tile/mountain01-lod1.obj" type="ArrayMesh" id=3]
 [ext_resource path="res://data/models/map/tile/mountain01-lod2.obj" type="ArrayMesh" id=4]
-
-[sub_resource type="CylinderShape" id=2]
-height = 1.0
-radius = 1.65
+[ext_resource path="res://data/others/hex_collider.shape" type="Shape" id=5]
 
 [node name="StaticBody" type="StaticBody"]
 collision_mask = 0
 
 [node name="collider" type="CollisionShape" parent="."]
-shape = SubResource( 2 )
+shape = ExtResource( 5 )
 
 [node name="LOD" type="LOD" parent="."]
-lod_range = 0.0
-lod_priority = 1
 
 [node name="main" type="MeshInstance" parent="LOD"]
 lod_range = 30.0

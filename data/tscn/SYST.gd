@@ -31,7 +31,7 @@ func window_prepare() -> void:
 	if rec_screen:
 		window_size *= Vector2(.52, .52)
 	elif dev_screen:
-		window_size *= Vector2(.65, .65)
+		window_size *= Vector2(.72, .72)
 	else:
 		window_size *= Vector2(4, 4)
 

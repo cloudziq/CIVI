@@ -9,11 +9,11 @@ var raycast  := RayCast.new()
 
 onready var highlight := $"../%Highlight"
 
-var def_zoom_speed := 6.2
+var def_zoom_speed := 3.6
 var def_move_speed := 1.8
 
 var min_h  :=  10.0
-var max_h  :=  22.0
+var max_h  :=  12.0
 var min_a  := -32.0
 var max_a  := -62.0
 var min_f  :=  52.0
@@ -39,7 +39,7 @@ var target_fov     := 0.0
 var target_dof     := 0.0
 var target_sd      := 0.0
 var time_passed    := 0.0
-var frame_count    := 0
+#var frame_count    := 0
 
 
 
@@ -90,14 +90,14 @@ func _process(dt: float) -> void:
 	#  Shadow Distance:
 	xx  = $"%Sun".directional_shadow_max_distance
 	if xx != target_sd:
-		$"%Sun".directional_shadow_max_distance = lerp(xx, target_sd, .6)
+		$"%Sun".directional_shadow_max_distance = lerp(xx, target_sd, .4)
 
 	#  Highlight:
 	if highlight.position != highlight_targ:
-		highlight.position  = lerp(highlight.position, highlight_targ, .52)
+		highlight.position  = lerp(highlight.position, highlight_targ, .62)
 
 
-	if time_passed > .01:
+	if time_passed > .02:
 		time_passed = 0
 		get_hex_at_mouse()
 
@@ -167,7 +167,7 @@ func world_to_hex(pos: Vector3) -> Vector2:
 func cam_mod(move  := 0.0) -> void:
 	var ratio      := (global_transform.origin.y -min_h) /(max_h -min_h)
 	zoom_speed      = clamp(zoom_speed +move, -def_zoom_speed, def_zoom_speed)
-	move_speed_add  = def_move_speed * (1 + ratio * 32)
+	move_speed_add  = def_move_speed * (1 + ratio * 26)
 
 	target_tilt  = lerp(min_a,  max_a,  ratio)
 	target_fov   = lerp(min_f,  max_f,  ratio)

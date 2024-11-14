@@ -11,18 +11,21 @@ onready var angle  : float            = $"../%Cam".rotation_degrees.y
 
 
 ## Main settings:
-var day_length    := 18.0   ## in seconds
-var night_length  := 14.0
+var day_length    := 16.0   ## in seconds
+var night_length  := day_length *.88
 var phases_amount := 3      ## phases amount (see param_table)
 
 var sun_min_h  :=  0
-var sun_max_h  := -36.0
+var sun_max_h  := -44.0
 var moon_min_h :=  0
-var moon_max_h := -25.0
-var rot_dir    := -1
+var moon_max_h := -12.0
+var rot_dir    :=  1
+var rot_dir2   :=  -1
 
-onready var start_pos    :=  angle -90.0
-onready var end_pos      :=  angle +start_pos +90
+onready var start_pos    :=  270
+onready var end_pos      :=  start_pos -180
+onready var start_pos2   :=  270 - 180
+onready var end_pos2     :=  270 - 360
 onready var bg_start_pos :=  start_pos +160.0
 
 var moon_start_offset := (day_length -(night_length *.12)) -1 -day_length   *.02
@@ -53,8 +56,8 @@ var param_table := {
 			Color(.58, .54, .48),
 			Color(.24, .12, .16)
 		],
-		"bg_strength": [.96, 1.1, .8],
-		"saturation":  [1.3, 1.6, 1.1]
+		"bg_strength": [.92, 1.32, 1.1],
+		"saturation":  [1.4, 1.6, 1.1]
 	},
 	"night": {
 		"color": [
@@ -63,7 +66,7 @@ var param_table := {
 			Color(.12, .18, .26)
 		],
 		"bg_strength": [.5, .1, 1.1],
-		"saturation":  [.9, .82, .92]
+		"saturation":  [.9, .82, 1.2]
 	}
 }
 
@@ -119,7 +122,7 @@ func _process(dt: float) -> void:
 				if moon_cycle > sun_start_offset:
 					sun_vis  = true
 
-				var current_dist       = lerp(start_pos, end_pos, moon_p) * rot_dir
+				var current_dist       = lerp(start_pos2, end_pos2, moon_p) * rot_dir2
 				var angle_x: float     = lerp(moon_min_h, moon_max_h, sin(moon_p * PI))
 				moon.rotation_degrees  = Vector3(angle_x, current_dist, 0)
 			else:
@@ -142,7 +145,7 @@ func aura_init(type: String) -> void:
 
 func phase_run(type:String, time:float, phase:=0) -> void:
 	var obj   := sun if type == "day" else moon
-	var a     := 3.2 if type == "day" else 6.2  ## fog & ambient strength modifier
+	var a     := 2.0 if type == "day" else 6.2  ## fog & ambient strength modifier
 
 	if phase == 0:
 		obj.visible  = true
@@ -156,7 +159,7 @@ func phase_run(type:String, time:float, phase:=0) -> void:
 		t_env.tween_property(obj, "light_color", col_, time)
 		t_env.parallel().tween_property(env_, "ambient_light_color", col_ *1.1, time)
 		t_env.parallel().tween_property(env_, "ambient_light_energy", a *2.2, time)
-		t_env.parallel().tween_property(env_, "fog_color", col_ *str_ *a, time)
+		t_env.parallel().tween_property(env_, "fog_color", col_ *str_ *a *.32, time)
 		t_env.parallel().tween_property(env_, "background_energy", str_, time)
 		t_env.parallel().tween_property(env_, "adjustment_saturation", sat_, time)
 

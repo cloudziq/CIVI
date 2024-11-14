@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/hill02-lod1.obj-73c304e268e79a3124ffe60981c08406.mesh"
+
+[deps]
+
+files=[ "res://.import/hill02-lod1.obj-73c304e268e79a3124ffe60981c08406.mesh" ]
+
+source_file="res://data/models/map/tile/hill02-lod1.obj"
+dest_files=[ "res://.import/hill02-lod1.obj-73c304e268e79a3124ffe60981c08406.mesh", "res://.import/hill02-lod1.obj-73c304e268e79a3124ffe60981c08406.mesh" ]
+
+[params]
+
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+optimize_mesh_flags=4286
+generate_tangents=true
+vertex_cache_optimization=true
+octahedral_compression=true
