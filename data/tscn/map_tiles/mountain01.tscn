@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://data/models/map/tile/mountain01.obj" type="ArrayMesh" id=1]
-[ext_resource path="res://terrain_mat.material" type="Material" id=2]
+[ext_resource path="res://terrain_mat_SM.material" type="Material" id=2]
 [ext_resource path="res://data/models/map/tile/mountain01-lod1.obj" type="ArrayMesh" id=3]
 [ext_resource path="res://data/models/map/tile/mountain01-lod2.obj" type="ArrayMesh" id=4]
 [ext_resource path="res://data/others/hex_collider.shape" type="Shape" id=5]

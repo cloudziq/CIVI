@@ -153,7 +153,6 @@ func get_hex_at_mouse():
 func world_to_hex(pos: Vector3) -> Vector2:
 	var q = pos.x / (hex_radius *3 *.5)
 	var r = (pos.z - (q *hex_radius *sqrt(3) *.5)) / (hex_radius *sqrt(3))
-
 	var rounded_x = round(q)
 	var rounded_y = round(r)
 
@@ -173,12 +172,3 @@ func cam_mod(move  := 0.0) -> void:
 	target_fov   = lerp(min_f,  max_f,  ratio)
 	target_dof   = lerp(min_d,  max_d,  ratio)
 	target_sd    = lerp(min_sd, max_sd, ratio)
-
-
-
-
-
-#func reload_map_data() -> void:
-#	map_data        = get_parent().map_data
-#	vis_data        = get_parent().visual_data
-#	prev_multimesh  = vis_data["flat01"].multimesh

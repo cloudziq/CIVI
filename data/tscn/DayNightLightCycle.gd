@@ -11,21 +11,21 @@ onready var angle  : float            = $"../%Cam".rotation_degrees.y
 
 
 ## Main settings:
-var day_length    := 16.0   ## in seconds
+var day_length    := 22.0   ## in seconds
 var night_length  := day_length *.88
 var phases_amount := 3      ## phases amount (see param_table)
 
 var sun_min_h  :=  0
 var sun_max_h  := -44.0
 var moon_min_h :=  0
-var moon_max_h := -12.0
+var moon_max_h := -22.0
 var rot_dir    :=  1
-var rot_dir2   :=  -1
+#var rot_dir2   :=  -1
 
 onready var start_pos    :=  270
 onready var end_pos      :=  start_pos -180
-onready var start_pos2   :=  270 - 180
-onready var end_pos2     :=  270 - 360
+#onready var start_pos2   :=  270 - 180
+#onready var end_pos2     :=  270 - 360
 onready var bg_start_pos :=  start_pos +160.0
 
 var moon_start_offset := (day_length -(night_length *.12)) -1 -day_length   *.02
@@ -66,7 +66,7 @@ var param_table := {
 			Color(.12, .18, .26)
 		],
 		"bg_strength": [.5, .1, 1.1],
-		"saturation":  [.9, .82, 1.2]
+		"saturation":  [.8, .64, 1.2]
 	}
 }
 
@@ -122,7 +122,7 @@ func _process(dt: float) -> void:
 				if moon_cycle > sun_start_offset:
 					sun_vis  = true
 
-				var current_dist       = lerp(start_pos2, end_pos2, moon_p) * rot_dir2
+				var current_dist       = lerp(start_pos, end_pos, moon_p) * rot_dir
 				var angle_x: float     = lerp(moon_min_h, moon_max_h, sin(moon_p * PI))
 				moon.rotation_degrees  = Vector3(angle_x, current_dist, 0)
 			else:

@@ -71,5 +71,5 @@ func _input(event: InputEvent) -> void:
 
 
 func _on_map_ready() -> void:
-	s_map_regen.pitch_scale  = rand_range(.7, .9)
+	s_map_regen.pitch_scale  = rand_range(.7, 1.1)
 	s_map_regen.playing  = true
