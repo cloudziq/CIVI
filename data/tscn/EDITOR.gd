@@ -1,12 +1,12 @@
-extends     Spatial
+extends     Node3D
 class_name  editor
 
 
-export var PARTICLES : PackedScene
-export var SOUNDS    : PackedScene
+@export var PARTICLES : PackedScene
+@export var SOUNDS    : PackedScene
 
-onready var map  : Spatial  = get_parent()
-onready var cam  : Camera   = $"../%Cam"
+@onready var map  : Node3D  = get_parent()
+@onready var cam  : Camera3D   = $"../%Cam"
 
 var def_emit_str := .8
 
@@ -21,7 +21,7 @@ var s_map_regen  : AudioStreamPlayer
 
 
 func _ready() -> void:
-	var sounds    = SOUNDS.instance()
+	var sounds    = SOUNDS.instantiate()
 	s_tile_place  = sounds.get_node("tile_place")
 	s_map_regen   = sounds.get_node("map_regenerate")
 	add_child(sounds)
@@ -39,9 +39,9 @@ func _input(event: InputEvent) -> void:
 
 		if cam.hex:
 			var corr      : float    ## Y-axis correction when placing on water
-			var particles : CPUParticles
+			var particles : CPUParticles3D
 
-			particles           = PARTICLES.instance()
+			particles           = PARTICLES.instantiate()
 			particles.position  = cam.hex_pos - Vector3(0, 2, 0)
 			particles.material_override.emission_energy = def_emit_str * (2 -cycle_sum)
 			particles.emitting  = true
@@ -53,7 +53,7 @@ func _input(event: InputEvent) -> void:
 
 			corr  = .1 if cam.hex.position.y < 0.0 else 0.0
 
-			s_tile_place.pitch_scale  = rand_range(1.6, 4.6)
+			s_tile_place.pitch_scale  = randf_range(1.6, 4.6)
 			s_tile_place.playing  = true
 
 			map.hex_prepare(Vector2(0,0), type, corr)
@@ -63,7 +63,7 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed("map_regenerate"):
 		for i in get_tree().get_nodes_in_group("hex"):
 			i.call_deferred("queue_free")
-		yield(get_tree(), "idle_frame")
+		await get_tree().idle_frame
 		map.generate_noise_map()
 
 
@@ -71,5 +71,5 @@ func _input(event: InputEvent) -> void:
 
 
 func _on_map_ready() -> void:
-	s_map_regen.pitch_scale  = rand_range(.7, 1.1)
+	s_map_regen.pitch_scale  = randf_range(.7, 1.1)
 	s_map_regen.playing  = true

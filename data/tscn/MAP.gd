@@ -1,18 +1,15 @@
-extends Spatial
-
-export var map_radius := 40
+extends Node3D
 
 signal map_ready
 
-onready var cam := $"%Cam"
-
-
+@onready var cam        := $"%Cam"
+@onready var map_radius : int = $"../".map_radius
 
 
 var LightCycle     :  DayNightLightCycle
 
 var hex_radius     := 2
-var noise          :  OpenSimplexNoise
+var noise          :  FastNoiseLite
 var instances_data :  Dictionary
 
 var tiles_def := {
@@ -43,12 +40,12 @@ func _ready() -> void:
 
 
 func hex_prepare(coords: Vector2, force_cat:= "", corr:= 0.0) -> void:
-	var instance   :  StaticBody
+	var instance   :  StaticBody3D
 	var cat  = instances_data[coords][1] if force_cat == "" else force_cat
 
 	## single tile place logic:
 	if force_cat != "":
-		instance  = tiles_def[cat][hex_roulette(cat)].instance()
+		instance  = tiles_def[cat][hex_roulette(cat)].instantiate()
 		instance.transform  = cam.hex.transform
 		instance.add_to_group("hex")
 		cam.hex.queue_free()
@@ -62,7 +59,7 @@ func hex_prepare(coords: Vector2, force_cat:= "", corr:= 0.0) -> void:
 		instance  = instances_data[coords][0]
 
 	if cat != "water":
-		var random_rotation       = deg2rad(randi() %6 *60)
+		var random_rotation       = deg_to_rad(randi() %6 *60)
 		instance.transform.basis  = Basis(Vector3(0, 1, 0), random_rotation)
 
 	add_child(instance)
@@ -74,7 +71,7 @@ func hex_prepare(coords: Vector2, force_cat:= "", corr:= 0.0) -> void:
 
 func hex_draw(instances_list:Dictionary, full_map_gen:=false) -> void:
 	var iletego     := 0  #  hex num
-	var instance    :  StaticBody
+	var instance    :  StaticBody3D
 	var hex_h       :  float
 	var start_scale :  Vector3
 	var t_geo       := get_tree().create_tween().set_parallel().set_trans(1).set_ease(1)
@@ -111,9 +108,9 @@ func hex_draw(instances_list:Dictionary, full_map_gen:=false) -> void:
 		## ANIM PHASE 1:
 		if data[1] != "water":
 			scale.y *= 2.6
-			t_geo.tween_property(instance, "scale", scale *1.32, rand_range(.4, 1.2))
+			t_geo.tween_property(instance, "scale", scale *1.32, randf_range(.4, 1.2))
 		else:
-			t_h2o.tween_property(instance, "scale", Vector3(1,1,1), rand_range(1.1, 1.2))
+			t_h2o.tween_property(instance, "scale", Vector3(1,1,1), randf_range(1.1, 1.2))
 			t_h2o.tween_property(instance, "transform:origin", def_pos, 1.1)
 
 	t_geo.chain()
@@ -125,25 +122,25 @@ func hex_draw(instances_list:Dictionary, full_map_gen:=false) -> void:
 			"flat":
 				hex_h  = .6
 			"hill":
-				hex_h  = rand_range(2.42, 2.94)
+				hex_h  = randf_range(1.82, 2.2)
 			"mountain":
-				hex_h  = rand_range(.98, 1.88)
+				hex_h  = randf_range(.68, 1.34)
 
 		instance  = data[0]
 		if data[1] != "water":
-			t_geo.tween_property(instance, "scale", Vector3(1, hex_h, 1), rand_range(.8, 2.6))
+			t_geo.tween_property(instance, "scale", Vector3(1, hex_h, 1), randf_range(.8, 2.6))
 
 
 	##  PREPS:
 	if full_map_gen:
-		yield(get_tree(), "idle_frame")
+		await get_tree().idle_frame
 		emit_signal("map_ready")
 		print(iletego)
 
-	if not t_geo.is_valid():
-		t_geo.kill()
-	if not t_h2o.is_valid():
-		t_h2o.kill()
+#	if not t_geo.is_valid():
+#		t_geo.kill()
+#	if not t_h2o.is_valid():
+#		t_h2o.kill()
 
 
 
@@ -167,10 +164,10 @@ func generate_instances() -> void:
 
 
 func generate_noise_map() -> void:
-	noise  = OpenSimplexNoise.new()
+	noise  = FastNoiseLite.new()
 	noise.seed         = randi()
-	noise.octaves      = 8
-	noise.period       = rand_range(5, 6) + (map_radius * .01)
+	noise.fractal_octaves      = 8
+	noise.period       = randf_range(5, 6) + (map_radius * .01)
 	noise.persistence  = .04
 	noise.lacunarity   = 1
 
@@ -182,16 +179,16 @@ func generate_noise_map() -> void:
 
 
 func define_hex_type_from_noise(noise_value:=.16, q:=0, r:=0) -> Array:
-	var transform := Transform()
-	var instance  :  StaticBody
+	var transform := Transform3D()
+	var instance  :  StaticBody3D
 	var cat       :  String
 
 	transform.origin    = hex_to_world(q, r)
 
-	if noise_value >.64 and randf() <.40:
+	if noise_value >.64 and randf() <.4:
 		cat = "mountain"
 
-	elif noise_value >.346 and randf() <.6:
+	elif noise_value >.36 and randf() <.4:
 		cat = "hill"
 
 	elif noise_value >.22:
@@ -202,7 +199,7 @@ func define_hex_type_from_noise(noise_value:=.16, q:=0, r:=0) -> Array:
 		transform.origin.y -=  .1
 
 	var type = hex_roulette(cat)
-	instance  = tiles_def[cat][type].instance()
+	instance  = tiles_def[cat][type].instantiate()
 
 	instance.transform  = transform
 	instance.add_to_group("hex")
@@ -217,7 +214,7 @@ func hex_roulette(cat:String) ->int:
 	var type : int
 
 	if tiles_def[cat].size() > 1:
-		type  = int(round(rand_range(0, 1)))
+		type  = int(round(randf_range(0, 1)))
 	else:
 		type  = 0
 

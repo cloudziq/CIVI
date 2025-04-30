@@ -1,21 +1,25 @@
 [remap]
 
 importer="wavefront_obj"
+importer_version=1
 type="Mesh"
-path="res://.import/hill02.obj-9adb6d2b16f0ea558696f39a2b25b93c.mesh"
+uid="uid://wqbsp1od8wwh"
+path="res://.godot/imported/hill02.obj-9adb6d2b16f0ea558696f39a2b25b93c.mesh"
 
 [deps]
 
-files=[ "res://.import/hill02.obj-9adb6d2b16f0ea558696f39a2b25b93c.mesh" ]
+files=["res://.godot/imported/hill02.obj-9adb6d2b16f0ea558696f39a2b25b93c.mesh"]
 
 source_file="res://data/models/map/tile/hill02.obj"
-dest_files=[ "res://.import/hill02.obj-9adb6d2b16f0ea558696f39a2b25b93c.mesh", "res://.import/hill02.obj-9adb6d2b16f0ea558696f39a2b25b93c.mesh" ]
+dest_files=["res://.godot/imported/hill02.obj-9adb6d2b16f0ea558696f39a2b25b93c.mesh", "res://.godot/imported/hill02.obj-9adb6d2b16f0ea558696f39a2b25b93c.mesh"]
 
 [params]
 
-scale_mesh=Vector3( 1, 1, 1 )
-offset_mesh=Vector3( 0, 0, 0 )
-optimize_mesh_flags=4286
 generate_tangents=true
-vertex_cache_optimization=true
-octahedral_compression=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

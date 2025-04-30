@@ -9,8 +9,8 @@ var config_path
 
 
 var window := Vector2(
-	ProjectSettings.get_setting("display/window/size/width" ),
-	ProjectSettings.get_setting("display/window/size/height")
+	ProjectSettings.get_setting("display/window/size/viewport_width" ),
+	ProjectSettings.get_setting("display/window/size/viewport_height")
 	)
 
 

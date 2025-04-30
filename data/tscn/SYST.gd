@@ -2,11 +2,12 @@
 # v0.1^-gamma
 
 
-extends Spatial
+extends Node3D
+enum screens {normal, dev, rec}
 
-
-export var rec_screen  := false
-export var dev_screen  := true
+@export var map_radius  : int    = 20
+@export var day_length  : float  = 60   ## in seconds
+@export var screen: screens      = screens.normal
 
 
 
@@ -17,7 +18,7 @@ func _ready() -> void:
 	randomize()
 #	G.load_config()
 	window_prepare()
-	add_child(preload("res://data/tscn/MAP.tscn").instance())
+	add_child(preload("res://data/tscn/MAP.tscn").instantiate())
 
 
 
@@ -25,20 +26,20 @@ func _ready() -> void:
 
 
 func window_prepare() -> void:
-	var display_size = OS.get_screen_size()
+	var display_size = DisplayServer.screen_get_size()
 	var window_size  = G.window
 
-	if rec_screen:
-		window_size *= Vector2(.52, .52)
-	elif dev_screen:
+	if screen == screens.normal:
+		window_size *= Vector2(4, 4)
+	elif screen == screens.dev:
 		window_size *= Vector2(.72, .72)
 	else:
-		window_size *= Vector2(4, 4)
+		window_size *= Vector2(.44, .44)
 
 	if display_size.y <= window_size.y:
 		var scale_ratio = window_size.x / (display_size.x - 100)
 		window_size.x /= scale_ratio ; window_size.y /= scale_ratio
 
-	OS.window_size = window_size
+	get_window().size = window_size
 	window_size.y += 64
-	OS.window_position = display_size * .5 - window_size * .5
+	get_window().position = display_size * .5 - window_size * .5

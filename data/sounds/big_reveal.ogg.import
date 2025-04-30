@@ -1,15 +1,19 @@
 [remap]
 
-importer="ogg_vorbis"
-type="AudioStreamOGGVorbis"
-path="res://.import/big_reveal.ogg-e4e8403690eb10022a4672acfabc7983.oggstr"
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bj32kav1r3u0o"
+path="res://.godot/imported/big_reveal.ogg-e4e8403690eb10022a4672acfabc7983.oggvorbisstr"
 
 [deps]
 
 source_file="res://data/sounds/big_reveal.ogg"
-dest_files=[ "res://.import/big_reveal.ogg-e4e8403690eb10022a4672acfabc7983.oggstr" ]
+dest_files=["res://.godot/imported/big_reveal.ogg-e4e8403690eb10022a4672acfabc7983.oggvorbisstr"]
 
 [params]
 
 loop=false
 loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

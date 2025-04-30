@@ -3,39 +3,39 @@
 [ext_resource path="res://data/models/map/tile/hill02.obj" type="ArrayMesh" id=1]
 [ext_resource path="res://terrain_mat_SM.material" type="Material" id=2]
 [ext_resource path="res://data/models/map/tile/hill02-lod1.obj" type="ArrayMesh" id=3]
-[ext_resource path="res://data/others/hex_collider.shape" type="Shape" id=4]
+[ext_resource path="res://data/others/hex_collider.shape" type="Shape3D" id=4]
 [ext_resource path="res://data/models/map/tile/hill02-lod2.obj" type="ArrayMesh" id=5]
 
-[node name="StaticBody" type="StaticBody"]
+[node name="StaticBody3D" type="StaticBody3D"]
 collision_mask = 0
 
-[node name="collider" type="CollisionShape" parent="."]
+[node name="collider" type="CollisionShape3D" parent="."]
 shape = ExtResource( 4 )
 
 [node name="LOD" type="LOD" parent="."]
 lod_priority = 1
 
-[node name="main" type="MeshInstance" parent="LOD"]
+[node name="main" type="MeshInstance3D" parent="LOD"]
 lod_range = 20.0
 material_override = ExtResource( 2 )
 mesh = ExtResource( 1 )
 skeleton = NodePath("")
 
-[node name="lod1" type="MeshInstance" parent="LOD"]
+[node name="lod1" type="MeshInstance3D" parent="LOD"]
 visible = false
 material_override = ExtResource( 2 )
 mesh = ExtResource( 3 )
 skeleton = NodePath("")
 
-[node name="lod2" type="MeshInstance" parent="LOD"]
+[node name="lod2" type="MeshInstance3D" parent="LOD"]
 visible = false
 lod_range = 22.0
 material_override = ExtResource( 2 )
 mesh = ExtResource( 5 )
 skeleton = NodePath("")
 
-[node name="OmniLight" type="OmniLight" parent="."]
-transform = Transform( -0.999507, 0, -0.0314106, 0, 1, 0, 0.0314106, 0, -0.999507, 1.32215, 2.30868, 0.614682 )
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D( -0.999507, 0, -0.0314106, 0, 1, 0, 0.0314106, 0, -0.999507, 1.32215, 2.30868, 0.614682 )
 light_energy = 9.023
 shadow_enabled = true
 editor_only = true

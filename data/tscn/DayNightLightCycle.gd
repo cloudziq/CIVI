@@ -2,34 +2,35 @@ extends     Node
 class_name  DayNightLightCycle
 
 
-onready var sun    : DirectionalLight = $"../%Sun"
-onready var moon   : DirectionalLight = $"../%Moon"
-onready var env    : WorldEnvironment = $"../%Env"
-onready var env_   : Environment      = env.environment
-onready var t_env  : SceneTreeTween
-onready var angle  : float            = $"../%Cam".rotation_degrees.y
+@onready var sun   : DirectionalLight3D  = $"../%Sun"
+@onready var moon  : DirectionalLight3D  = $"../%Moon"
+@onready var env   : WorldEnvironment  = $"../%Env"
+@onready var env_  : Environment       = env.environment
+@onready var angle : float             = $"../%Cam".rotation_degrees.y
 
+@onready var day_length : float  = $"../../".day_length
+@onready var night_length       := day_length *.88 *.6
+@onready var moon_start_offset  := (day_length -(night_length *.12)) -1 -day_length   *.02
+@onready var sun_start_offset   := (night_length -(day_length *.14)) -1 -night_length *.02
 
 ## Main settings:
-var day_length    := 22.0   ## in seconds
-var night_length  := day_length *.88
-var phases_amount := 3      ## phases amount (see param_table)
 
-var sun_min_h  :=  0
+
+
+var phases_amount := 3      ## phases amount (must be defined in param_table)
+
+var sun_min_h  :=  2
 var sun_max_h  := -44.0
-var moon_min_h :=  0
+var moon_min_h :=  2
 var moon_max_h := -22.0
 var rot_dir    :=  1
-#var rot_dir2   :=  -1
 
-onready var start_pos    :=  270
-onready var end_pos      :=  start_pos -180
-#onready var start_pos2   :=  270 - 180
-#onready var end_pos2     :=  270 - 360
-onready var bg_start_pos :=  start_pos +160.0
+var t_env        :  Tween
+var start_pos    := 270
+var end_pos      := start_pos -180
+var bg_start_pos := start_pos +160.0
 
-var moon_start_offset := (day_length -(night_length *.12)) -1 -day_length   *.02
-var sun_start_offset  := (night_length -(day_length *.14)) -1 -night_length *.02
+
 
 var sun_vis    := true
 var moon_vis   := false
@@ -79,6 +80,8 @@ var param_table := {
 func _ready() -> void:
 	moon.visible  = false
 
+	if day_length == 0:
+		set_process(false)
 
 
 

@@ -1,21 +1,25 @@
 [remap]
 
 importer="wavefront_obj"
+importer_version=1
 type="Mesh"
-path="res://.import/mountain01-lod2.obj-161b04e3bce2b40f479e820b4f7f299e.mesh"
+uid="uid://e6pf8b5uhgi6"
+path="res://.godot/imported/mountain01-lod2.obj-161b04e3bce2b40f479e820b4f7f299e.mesh"
 
 [deps]
 
-files=[ "res://.import/mountain01-lod2.obj-161b04e3bce2b40f479e820b4f7f299e.mesh" ]
+files=["res://.godot/imported/mountain01-lod2.obj-161b04e3bce2b40f479e820b4f7f299e.mesh"]
 
 source_file="res://data/models/map/tile/mountain01-lod2.obj"
-dest_files=[ "res://.import/mountain01-lod2.obj-161b04e3bce2b40f479e820b4f7f299e.mesh", "res://.import/mountain01-lod2.obj-161b04e3bce2b40f479e820b4f7f299e.mesh" ]
+dest_files=["res://.godot/imported/mountain01-lod2.obj-161b04e3bce2b40f479e820b4f7f299e.mesh", "res://.godot/imported/mountain01-lod2.obj-161b04e3bce2b40f479e820b4f7f299e.mesh"]
 
 [params]
 
-scale_mesh=Vector3( 1, 1, 1 )
-offset_mesh=Vector3( 0, 0, 0 )
-optimize_mesh_flags=4286
 generate_tangents=true
-vertex_cache_optimization=true
-octahedral_compression=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

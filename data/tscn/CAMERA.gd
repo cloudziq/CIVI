@@ -1,18 +1,18 @@
-extends Camera
+extends Camera3D
 
 
 var map_data :  Array
-var raycast  := RayCast.new()
+var raycast  := RayCast3D.new()
 
 
 
 
-onready var highlight := $"../%Highlight"
+@onready var highlight := $"../%Highlight"
 
-var def_zoom_speed := 3.6
+var def_zoom_speed := 4.2
 var def_move_speed := 1.8
 
-var min_h  :=  10.0
+var min_h  :=  4.0
 var max_h  :=  12.0
 var min_a  := -32.0
 var max_a  := -62.0
@@ -20,14 +20,14 @@ var min_f  :=  52.0
 var max_f  :=  84.0
 var min_d  :=  0.08
 var max_d  :=  0.04
-var min_sd :=  50
-var max_sd :=  100
+var min_sd :=  100
+var max_sd :=  50
 
 var hex_radius     := 2
 
 
 ##  Holders:
-var hex            :  StaticBody
+var hex            :  StaticBody3D
 var hex_pos        :  Vector3
 var xx             := 0.0
 var move_speed_add := 0.0
@@ -137,7 +137,7 @@ func get_hex_at_mouse():
 	var mouse_pos    = get_viewport().get_mouse_position()
 	var origin       = project_ray_origin(mouse_pos) + Vector3(0,.4,0)
 	var direction    = project_ray_normal(mouse_pos)
-	var space_state  = get_world().direct_space_state
+	var space_state  = get_world_3d().direct_space_state
 	var ray_test     = space_state.intersect_ray(origin, origin + direction * 82)
 
 	if ray_test:

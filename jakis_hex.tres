@@ -5,4 +5,4 @@
 [resource]
 instance_count = 1
 mesh = ExtResource( 1 )
-transform_2d_array = PoolVector2Array( 1, 0, 0, 1, 0, 0 )
+transform_2d_array = PackedVector2Array( 1, 0, 0, 1, 0, 0 )

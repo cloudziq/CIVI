@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=2]
 
-[sub_resource type="SpatialMaterial" id=1]
+[sub_resource type="StandardMaterial3D" id=1]
 flags_transparent = true
 flags_vertex_lighting = true
 flags_no_depth_test = true
@@ -28,10 +28,10 @@ bake_resolution = 50
 _data = [ Vector2( 0, 1.11882 ), 0.0, 0.0, 0, 0, Vector2( 0.113069, 0.68441 ), 0.0, 0.0, 0, 0, Vector2( 0.319332, 1.18023 ), 8.22087, 8.22087, 0, 0, Vector2( 0.61935, 0.442586 ), -3.69808, -3.69808, 0, 0, Vector2( 1, 0 ), 0.0, 0.0, 0, 0 ]
 
 [sub_resource type="Gradient" id=4]
-offsets = PoolRealArray( 0, 0.186529, 0.331606, 1 )
-colors = PoolColorArray( 0.409219, 0.382044, 0.382044, 1, 1, 1, 1, 0.54902, 1, 1, 1, 0.47451, 1, 1, 1, 0 )
+offsets = PackedFloat32Array( 0, 0.186529, 0.331606, 1 )
+colors = PackedColorArray( 0.409219, 0.382044, 0.382044, 1, 1, 1, 1, 0.54902, 1, 1, 1, 0.47451, 1, 1, 1, 0 )
 
-[node name="place_tile" type="CPUParticles"]
+[node name="place_tile" type="CPUParticles3D"]
 layers = 2
 material_override = SubResource( 1 )
 cast_shadow = 0

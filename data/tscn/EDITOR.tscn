@@ -4,8 +4,18 @@
 [ext_resource path="res://data/tscn/particles/particles-editor.tscn" type="PackedScene" id=2]
 [ext_resource path="res://data/tscn/SOUNDS.tscn" type="PackedScene" id=3]
 
-[node name="Spatial" type="Spatial"]
+[node name="Node3D" type="Node3D"]
 process_priority = -1
 script = ExtResource( 1 )
 PARTICLES = ExtResource( 2 )
 SOUNDS = ExtResource( 3 )
+
+[node name="Edit_UI" type="Control" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="Edit_UI"]
+offset_right = 40.0
+offset_bottom = 14.0
+text = "DUPSKO
+"

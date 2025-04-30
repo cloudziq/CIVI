@@ -3,7 +3,7 @@
 [ext_resource path="res://data/sounds/1.wav" type="AudioStream" id=1]
 [ext_resource path="res://data/sounds/big_reveal.ogg" type="AudioStream" id=2]
 
-[node name="sounds" type="Spatial"]
+[node name="sounds" type="Node3D"]
 
 [node name="tile_place" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 1 )
